@@ -31,89 +31,88 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Product {
 
-	@Id
-	@GeneratedValue
-	private long id;
-	
-	private String sku;
-	
-	private String name;
-	
-	private String description;
+    @Id
+    @GeneratedValue
+    private long id;
 
-	@ManyToOne
-	private ProductType type;
+    private String sku;
 
-	
-	@Column(name = "selling_price")
-	private double sellingPrice;
+    private String name;
 
-	private int stock;
+    private String description;
 
-	private double cost;
+    @ManyToOne
+    private ProductType type;
 
-	public long getId() {
-		return id;
-	}
+    @Column(name = "selling_price")
+    private double sellingPrice;
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    private int stock;
 
-	public String getSku() {
-		return sku;
-	}
+    private double cost;
 
-	public void setSku(String sku) {
-		this.sku = sku;
-	}
+    public long getId() {
+        return id;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public void setId(long id) {
+        this.id = id;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public String getSku() {
+        return sku;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public void setSku(String sku) {
+        this.sku = sku;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public ProductType getType() {
-		return type;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setType(ProductType type) {
-		this.type = type;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public double getSellingPrice() {
-		return sellingPrice;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public void setSellingPrice(double sellingPrice) {
-		this.sellingPrice = sellingPrice;
-	}
+    public ProductType getType() {
+        return type;
+    }
 
-	public int getStock() {
-		return stock;
-	}
+    public void setType(ProductType type) {
+        this.type = type;
+    }
 
-	public void setStock(int stock) {
-		this.stock = stock;
-	}
+    public double getSellingPrice() {
+        return sellingPrice;
+    }
 
-	public double getCost() {
-		return cost;
-	}
+    public void setSellingPrice(double sellingPrice) {
+        this.sellingPrice = sellingPrice;
+    }
 
-	public void setCost(double cost) {
-		this.cost = cost;
-	}
-	
+    public int getStock() {
+        return stock;
+    }
+
+    public void setStock(int stock) {
+        this.stock = stock;
+    }
+
+    public double getCost() {
+        return cost;
+    }
+
+    public void setCost(double cost) {
+        this.cost = cost;
+    }
+
 }

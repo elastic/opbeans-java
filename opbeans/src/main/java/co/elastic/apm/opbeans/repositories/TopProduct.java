@@ -20,13 +20,13 @@
 package co.elastic.apm.opbeans.repositories;
 
 public interface TopProduct {
-	long getId();
+    long getId();
 
-	String getSku();
+    String getSku();
 
-	String getName();
+    String getName();
 
-	long getStock();
+    long getStock();
 
-	long getSold();
+    long getSold();
 }

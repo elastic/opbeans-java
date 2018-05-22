@@ -30,4 +30,10 @@ public class IndexController {
 		return "index";
 	}
 	
+
+	@RequestMapping({ "/is-it-coffee-time" })
+	public String error() {
+		throw new RuntimeException("Demo exception");
+	}
+	
 }

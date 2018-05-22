@@ -44,62 +44,62 @@ import co.elastic.apm.opbeans.repositories.TopProduct;
 @RequestMapping("/api")
 class APIRestController {
 
-	private final ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
-	private final CustomerRepository customerRepository;
+    private final CustomerRepository customerRepository;
 
-	private final OrderRepository orderRepository;
+    private final OrderRepository orderRepository;
 
-	@Autowired
-	APIRestController(ProductRepository productRepository, CustomerRepository customerRepository, OrderRepository orderRepository) {
-		this.productRepository = productRepository;
-		this.customerRepository = customerRepository;
-		this.orderRepository = orderRepository;
-	}
+    @Autowired
+    APIRestController(ProductRepository productRepository, CustomerRepository customerRepository, OrderRepository orderRepository) {
+        this.productRepository = productRepository;
+        this.customerRepository = customerRepository;
+        this.orderRepository = orderRepository;
+    }
 
-	@GetMapping("/products")
-	Collection<ProductList> products() {
-		return productRepository.findAllList();
-	}
+    @GetMapping("/products")
+    Collection<ProductList> products() {
+        return productRepository.findAllList();
+    }
 
-	@GetMapping("/products/{productId}")
-	ProductDetail product(@PathVariable long productId) {
-		return productRepository.getOneDetail(productId);
-	}
+    @GetMapping("/products/{productId}")
+    ProductDetail product(@PathVariable long productId) {
+        return productRepository.getOneDetail(productId);
+    }
 
-	@GetMapping("/products/{productId}/customers")
-	List<Customer> customerWhoBought(@PathVariable long productId) {
-		return customerRepository.findCustomerWhoBoughtProduct(productId);
-	}
+    @GetMapping("/products/{productId}/customers")
+    List<Customer> customerWhoBought(@PathVariable long productId) {
+        return customerRepository.findCustomerWhoBoughtProduct(productId);
+    }
 
-	@GetMapping("/products/top")
-	Collection<TopProduct> topProducts() {
-		return productRepository.findTopSales(PageRequest.of(0, 3));
-	}
+    @GetMapping("/products/top")
+    Collection<TopProduct> topProducts() {
+        return productRepository.findTopSales(PageRequest.of(0, 3));
+    }
 
-	@GetMapping("/customers")
-	Collection<Customer> customers() {
-		return customerRepository.findAll();
-	}
+    @GetMapping("/customers")
+    Collection<Customer> customers() {
+        return customerRepository.findAll();
+    }
 
-	@GetMapping("/customers/{customerId}")
-	Customer customer(@PathVariable long customerId) {
-		return customerRepository.getOne(customerId);
-	}
+    @GetMapping("/customers/{customerId}")
+    Customer customer(@PathVariable long customerId) {
+        return customerRepository.getOne(customerId);
+    }
 
-	@GetMapping("/orders")
-	Collection<OrderList> orders() {
-		return orderRepository.findAllList();
-	}
+    @GetMapping("/orders")
+    Collection<OrderList> orders() {
+        return orderRepository.findAllList();
+    }
 
-	@GetMapping("/orders/{orderId}")
-	OrderDetail order(@PathVariable long orderId) {
-		return orderRepository.getOneDetail(orderId);
-	}
+    @GetMapping("/orders/{orderId}")
+    OrderDetail order(@PathVariable long orderId) {
+        return orderRepository.getOneDetail(orderId);
+    }
 
-	@GetMapping("/stats")
-	Stats stats() {
-		return new Stats(productRepository.count(), customerRepository.count(), orderRepository.count(), productRepository.getFinancial());
-	}
+    @GetMapping("/stats")
+    Stats stats() {
+        return new Stats(productRepository.count(), customerRepository.count(), orderRepository.count(), productRepository.getFinancial());
+    }
 
 }

@@ -28,7 +28,7 @@ import co.elastic.apm.opbeans.model.Customer;
 
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
-	@Query("SELECT distinct o.customer FROM order_lines ol left join ol.order o where ol.product.id=?1")
-	List<Customer> findCustomerWhoBoughtProduct(long productId);
-	
+    @Query("SELECT distinct o.customer FROM order_lines ol left join ol.order o where ol.product.id=?1")
+    List<Customer> findCustomerWhoBoughtProduct(long productId);
+
 }
