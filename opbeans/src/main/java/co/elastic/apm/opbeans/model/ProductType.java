@@ -26,7 +26,6 @@ import javax.persistence.Id;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity(name = "product_types")
-@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class ProductType {
 
     @Id
