@@ -62,31 +62,4 @@ public class OrderLine {
     public void setAmount(int amount) {
         this.amount = amount;
     }
-
-    @Embeddable
-    public class OrderLineId implements Serializable {
-        private static final long serialVersionUID = 1L;
-
-        @Column(name = "order_id")
-        private long orderId;
-
-        @Column(name = "product_id")
-        private long productId;
-
-        public long getOrderId() {
-            return orderId;
-        }
-
-        public void setOrderId(long orderId) {
-            this.orderId = orderId;
-        }
-
-        public long getProductId() {
-            return productId;
-        }
-
-        public void setProductId(long productId) {
-            this.productId = productId;
-        }
-    }
 }
