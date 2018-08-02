@@ -43,5 +43,5 @@ public interface ProductDetail {
 	@JsonProperty("type_name")
 	String getTypeName();
 
-	long getSold();
+	Long getSold();
 }
