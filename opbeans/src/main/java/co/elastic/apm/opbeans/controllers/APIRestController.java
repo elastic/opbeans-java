@@ -63,8 +63,7 @@ class APIRestController {
     @GetMapping("/products")
     ResponseEntity<String> products(HttpServletRequest request) throws URISyntaxException {
         RestTemplate restTemplate = new RestTemplate();
-        URI uri = new URI("http", null,request.getLocalAddr(), request.getLocalPort(), "/api/products-remote", null, null);
-        System.out.println("Making a remote call to: " + uri);
+        URI uri = new URI("http", null, request.getLocalAddr(), request.getLocalPort(), "/api/products-remote", null, null);
         String productLists = restTemplate.getForObject(uri.toString(), String.class);
         return ResponseEntity.ok().header("content-type", "application/json").body(productLists);
     }
