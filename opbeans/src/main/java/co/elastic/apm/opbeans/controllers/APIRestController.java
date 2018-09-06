@@ -19,15 +19,15 @@
  */
 package co.elastic.apm.opbeans.controllers;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import co.elastic.apm.opbeans.model.Customer;
 import co.elastic.apm.opbeans.repositories.CustomerRepository;
@@ -39,6 +39,9 @@ import co.elastic.apm.opbeans.repositories.ProductList;
 import co.elastic.apm.opbeans.repositories.ProductRepository;
 import co.elastic.apm.opbeans.repositories.Stats;
 import co.elastic.apm.opbeans.repositories.TopProduct;
+import org.springframework.web.client.RestTemplate;
+
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api")
@@ -58,7 +61,15 @@ class APIRestController {
     }
 
     @GetMapping("/products")
-    Collection<ProductList> products() {
+    ResponseEntity<String> products(HttpServletRequest request) throws URISyntaxException {
+        RestTemplate restTemplate = new RestTemplate();
+        URI uri = new URI("http", null, request.getLocalAddr(), request.getLocalPort(), "/api/products-remote", null, null);
+        String productLists = restTemplate.getForObject(uri.toString(), String.class);
+        return ResponseEntity.ok().header("content-type", "application/json").body(productLists);
+    }
+
+    @GetMapping(value = "/products-remote")
+    Collection<ProductList> productsRemote() {
         return productRepository.findAllList();
     }
 
