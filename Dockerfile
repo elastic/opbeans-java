@@ -13,7 +13,7 @@ ADD . /usr/src/java-code
 WORKDIR /usr/src/java-code/opbeans
 
 #Bring the latest frontend code
-COPY --from=opbeans/opbeans-frontend:latest /app/ src/main/resources
+COPY --from=opbeans/opbeans-frontend:latest /app/build src/main/resources/public
 
 RUN mvn -q -B package -DskipTests
 RUN cp -v /usr/src/java-code/opbeans/target/*.jar /usr/src/java-app/app.jar
@@ -37,6 +37,7 @@ COPY --from=0 /usr/src/java-app/*.jar ./
 
 CMD java -javaagent:/app/elastic-apm-agent.jar -Dspring.profiles.active=${OPBEANS_JAVA_PROFILE:-}\
                                         -Dserver.port=${OPBEANS_SERVER_PORT:-}\
+                                        -Dserver.address=${OPBEANS_SERVER_ADDRESS:-0.0.0.0}\
                                         -Dspring.datasource.url=${DATABASE_URL:-}\
                                         -Dspring.datasource.driverClassName=${DATABASE_DRIVER:-}\
                                         -Dspring.jpa.database=${DATABASE_DIALECT:-}\

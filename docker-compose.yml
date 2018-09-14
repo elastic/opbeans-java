@@ -4,7 +4,7 @@ services:
     build: .
     image: opbeans/opbeans-java:latest
     ports:
-      - "127.0.0.1:${OPBEANS_SERVER_PORT:-8000}:3000"
+      - "127.0.0.1:${OPBEANS_SERVER_PORT:-8000}:8000"
     logging:
       driver: 'json-file'
       options:
