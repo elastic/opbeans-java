@@ -11,10 +11,14 @@ WORKDIR /usr/src/java-app
 #build the application
 ADD . /usr/src/java-code
 WORKDIR /usr/src/java-code/opbeans
+
+#Bring the latest frontend code
+COPY --from=opbeans/opbeans-frontend:latest /app/ src/main/resources
+
 RUN mvn -q -B package -DskipTests
 RUN cp -v /usr/src/java-code/opbeans/target/*.jar /usr/src/java-app/app.jar
 
-#build te agent
+#build the agent
 WORKDIR /usr/src/java-agent-code
 RUN curl -L https://github.com/$JAVA_AGENT_REPO/archive/$JAVA_AGENT_BRANCH.tar.gz | tar --strip-components=1 -xz
 RUN mvn -q -B package -DskipTests
@@ -31,9 +35,9 @@ RUN export
 WORKDIR /app
 COPY --from=0 /usr/src/java-app/*.jar ./
 
-CMD java -javaagent:/app/elastic-apm-agent.jar -Dspring.profiles.active=customdb\
-                                        -Dserver.port=${OPBEANS_SERVER_PORT:-3002}\
-                                        -Dspring.datasource.url=${DATABASE_URL:-jdbc:postgresql://postgres/opbeans?user=postgres&password=verysecure}\
-                                        -Dspring.datasource.driverClassName=${DATABASE_DRIVER:-org.postgresql.Driver}\
-                                        -Dspring.jpa.database=${DATABASE_DIALECT:-POSTGRESQL}\
+CMD java -javaagent:/app/elastic-apm-agent.jar -Dspring.profiles.active=${OPBEANS_JAVA_PROFILE:-}\
+                                        -Dserver.port=${OPBEANS_SERVER_PORT:-}\
+                                        -Dspring.datasource.url=${DATABASE_URL:-}\
+                                        -Dspring.datasource.driverClassName=${DATABASE_DRIVER:-}\
+                                        -Dspring.jpa.database=${DATABASE_DIALECT:-}\
                                         -jar /app/app.jar
