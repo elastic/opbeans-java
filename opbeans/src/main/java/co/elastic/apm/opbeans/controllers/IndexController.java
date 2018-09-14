@@ -19,21 +19,35 @@
  */
 package co.elastic.apm.opbeans.controllers;
 
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class IndexController {
-	
-	@RequestMapping({ "/*", "/products/*", "/orders/*", "/customers/*" })
-	public String index() {
-		return "index";
-	}
-	
 
-	@RequestMapping({ "/is-it-coffee-time" })
-	public String error() {
-		throw new RuntimeException("Demo exception");
-	}
-	
+    @Autowired
+    Environment env;
+
+    @RequestMapping({ "/{path:[^\\\\.]*}", "/dashboard", "/products/*", "/orders/*", "/customers/*" })
+    public String redirect() {
+        return "forward:/";
+    }
+
+    @RequestMapping({ "/is-it-coffee-time" })
+    public String error() {
+        throw new RuntimeException("Demo exception");
+    }
+
+    @RequestMapping(value = { "/rum-config.js" })
+    @ResponseBody
+    public String rumConfig(HttpServletResponse response) {
+        response.setContentType("text/javascript");
+        return String.format("window.elasticApmJsBaseServerUrl = '%s'",
+                env.getProperty("ELASTIC_APM_JS_SERVER_URL", "http://localhost:" + env.getProperty("local.server.port", "80")));
+    }
 }
