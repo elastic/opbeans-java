@@ -8,6 +8,12 @@ To run the application run the following command from the `opbeans` folder:
 
     ./mvnw  spring-boot:run
 
+## Test with APM 
+To test with APM, including Server, Kibana and Elasticsearch, use the provided docker compose file by running the command```
+    
+    docker-composer up
+
+
 ## Customize Database
 
 Database can be overridden by using system properties and overriding values from the application property files:
