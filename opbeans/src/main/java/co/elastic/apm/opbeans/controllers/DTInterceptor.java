@@ -49,7 +49,7 @@ public class DTInterceptor extends HandlerInterceptorAdapter {
             // pre-process urls for simplicity
             for (int i = 0; i < hostList.length; i++) {
                 if (!hostList[i].startsWith("http")) { //make sure we have a protocol
-                    hostList[i] = "http://" + hostList[i];
+                    hostList[i] = "http://" + hostList[i]+":3000";
                 }
                 if (hostList[i].endsWith("/")) { // remove trailing /
                     hostList[i] = hostList[i].substring(0, hostList[i].length()-1);
