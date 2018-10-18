@@ -28,10 +28,10 @@ public class DTInterceptor extends HandlerInterceptorAdapter {
 
     private static Logger log = LoggerFactory.getLogger(DTInterceptor.class);
     
-    float dtProb;
-    String[] hostList;
-    RestTemplate restTemplate;
-    Random random = new Random();
+    private float dtProb;
+    private String[] hostList;
+    private RestTemplate restTemplate;
+    private Random random = new Random();
 
     public DTInterceptor(Environment env) {
         
@@ -69,10 +69,10 @@ public class DTInterceptor extends HandlerInterceptorAdapter {
             String destination = hostList[random.nextInt(hostList.length)];
             log.debug("Executing remote call to  {}{}",destination,request.getRequestURI());
             try {
-                String productLists = restTemplate.getForObject(destination + request.getRequestURI(), String.class);
+                String json = restTemplate.getForObject(destination + request.getRequestURI(), String.class);
                 response.setContentType("application/json");
                 response.setStatus(HttpServletResponse.SC_OK);
-                response.getWriter().write(productLists);
+                response.getWriter().write(json);
             } catch (RestClientException e) {
                 Throwable cause = e.getCause();
                 if (cause instanceof RestCallException) {
