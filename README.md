@@ -8,11 +8,20 @@ To run the application run the following command from the `opbeans` folder:
 
     ./mvnw  spring-boot:run
 
-## Test with APM 
-To test with APM, including Server, Kibana and Elasticsearch, use the provided docker compose file by running the command```
-    
-    docker-composer up
+## Run locally
+To run locally, including Server, Kibana and Elasticsearch, use the provided docker compose file by running the command
+```bash   
+docker-compose up
+```
 
+## Run with Elastic Cloud
+
+0. Start Elastic Cloud [trial](https://www.elastic.co/cloud/elasticsearch-service/signup) (if you don't have it yet)
+1. Add environmental variables `ELASTIC_CLOUD_ID` and `ELASTIC_CLOUD_CREDENTIALS` (in format `login:password`)
+2. Run 
+```bash
+docker-compose -f docker-compose-elastic-cloud.yml up
+```
 
 ## Customize Database
 
