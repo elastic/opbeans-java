@@ -34,8 +34,9 @@ public class DTInterceptor extends HandlerInterceptorAdapter {
     private Random random = new Random();
 
     public DTInterceptor(Environment env) {
-        
+
         hostList = env.getProperty("OPBEANS_SERVICES", "").split(",");
+        hostList = Arrays.stream(hostList).filter(s -> !s.equals("")).toArray(String[]::new);
         try {
             dtProb = Float.parseFloat(env.getProperty("OPBEANS_DT_PROBABILITY", "0.5"));
         } catch (NumberFormatException ex) {
