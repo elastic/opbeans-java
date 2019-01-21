@@ -22,6 +22,12 @@ package co.elastic.apm.opbeans.controllers;
 import java.util.Collection;
 import java.util.List;
 
+import co.elastic.apm.api.CaptureSpan;
+import co.elastic.apm.api.ElasticApm;
+import co.elastic.apm.opentracing.ElasticApmTracer;
+import io.opentracing.Scope;
+import io.opentracing.Span;
+import io.opentracing.Tracer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,22 +53,33 @@ class APIRestController{
     private final ProductRepository productRepository;
     private final CustomerRepository customerRepository;
     private final OrderRepository orderRepository;
+    private Tracer tracer;
 
     @Autowired
     APIRestController(ProductRepository productRepository, CustomerRepository customerRepository, OrderRepository orderRepository) {
         this.productRepository = productRepository;
         this.customerRepository = customerRepository;
         this.orderRepository = orderRepository;
+        tracer = new ElasticApmTracer();
     }
 
     @GetMapping(value = "/products")
-    Collection<ProductList> productsRemote() {
+    @CaptureSpan("Annotation products span")
+    Collection<ProductList> products() {
+        ElasticApm.currentSpan().addTag("foo", "bar");
         return productRepository.findAllList();
     }
 
     @GetMapping("/products/{productId}")
     ProductDetail product(@PathVariable long productId) {
-        return productRepository.getOneDetail(productId);
+        final Span span = tracer.buildSpan("OpenTracing product span")
+                .withTag("productId", Long.toString(productId))
+                .start();
+        try (Scope scope = tracer.scopeManager().activate(span, false)) {
+            return productRepository.getOneDetail(productId);
+        } finally {
+            span.finish();
+        }
     }
 
     @GetMapping("/products/{productId}/customers")
