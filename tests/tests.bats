@@ -24,11 +24,11 @@ CONTAINER="opbeans-java_opbeans-java_1"
 }
 
 @test "opbeans is running in port ${PORT}" {
-	sleep 20
-	URL="http://localhost:$(docker port "$CONTAINER" ${PORT} | cut -d: -f2)"
+	sleep 50
+	URL="http://127.0.0.1:$(docker port "$CONTAINER" ${PORT} | cut -d: -f2)"
 	run curl -v --fail --connect-timeout 10 --max-time 30 "${URL}/"
 	assert_success
-	assert_output --partial 'HTTP/1.1 200 OK'
+	assert_output --partial 'HTTP/1.1 200'
 }
 
 @test "clean test containers" {
