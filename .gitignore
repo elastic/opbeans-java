@@ -31,3 +31,7 @@ hs_err_pid*
 
 # Mac
 .DS_Store
+
+# For the BATS testing
+bats/
+target/
