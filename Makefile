@@ -22,6 +22,7 @@ prepare-test: bats ## Prepare the bats dependencies
 	@git submodule update --init --recursive
 
 test: prepare-test ## Run the tests
+	@echo "Tests are in progress, please be patient"
 	@bats/bin/bats --tap tests | tee target/results.tap
 	@cat target/results.tap | tap-xunit --package="co.elastic.opbeans" > target/junit-results.xml
 
