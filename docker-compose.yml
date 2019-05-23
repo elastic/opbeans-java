@@ -3,6 +3,7 @@ services:
   opbeans-java:
     build: .
     image: opbeans/opbeans-java:latest
+    container_name: opbeans-java
     ports:
       - "127.0.0.1:${OPBEANS_SERVER_PORT:-8000}:8000"
     logging:
