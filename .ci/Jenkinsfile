@@ -4,12 +4,16 @@
 pipeline {
   agent { label 'linux && immutable' }
   environment {
-    BASE_DIR = 'src/github.com/elastic/opbeans-java'
+    REPO = 'opbeans-java'
+    BASE_DIR = "src/github.com/elastic/${env.REPO}"
     NOTIFY_TO = credentials('notify-to')
     JOB_GCS_BUCKET = credentials('gcs-bucket')
     JOB_GCS_CREDENTIALS = 'apm-ci-gcs-plugin'
     DOCKERHUB_SECRET = 'secret/apm-team/ci/elastic-observability-dockerhub'
     PIPELINE_LOG_LEVEL = 'INFO'
+    GITHUB_CHECK_ITS_NAME = 'Integration Tests'
+    ITS_PIPELINE = 'apm-integration-tests-selector-mbp/master'
+    IMAGE = "docker.elastic.co/elastic/${env.REPO}"
   }
   options {
     timeout(time: 1, unit: 'HOURS')
@@ -20,9 +24,6 @@ pipeline {
     durabilityHint('PERFORMANCE_OPTIMIZED')
     rateLimitBuilds(throttle: [count: 60, durationName: 'hour', userBoost: true])
     quietPeriod(10)
-  }
-  parameters {
-    booleanParam(name: 'Run_As_Master_Branch', defaultValue: false, description: 'Allow to run any steps on a PR, some steps normally only run on master branch.')
   }
   triggers {
     issueCommentTrigger('(?i).*(?:jenkins\\W+)?run\\W+(?:the\\W+)?tests(?:\\W+please)?.*')
@@ -81,16 +82,38 @@ pipeline {
             }
           }
         }
-        stage('Release') {
-          input {
-            message 'Should we release a new version?'
-            ok 'Yes, we should.'
-            parameters {
-              string(name: 'VERSION', defaultValue: 'latest', description: 'What tag?')
+        /**
+        Push docker image to the staging docker registry
+        */
+        stage('Staging') {
+          steps {
+            withGithubNotify(context: 'Staging') {
+              deleteDir()
+              unstash 'source'
+              dir("${BASE_DIR}"){
+                sh "VERSION=${env.GIT_BASE_COMMIT} IMAGE=${env.IMAGE} make publish"
+                dockerLoginElasticRegistry()
+                sh(label: "push docker image to ${env.IMAGE}", script: "docker push ${env.IMAGE}")
+              }
             }
           }
+        }
+        stage('Integration Tests') {
+          agent none
+          steps {
+            log(level: 'INFO', text: 'Launching Async ITs')
+            // TODO: AGENT_INTEGRATION_TEST = Opbeans when the apm-integration-testing gets merged
+            build(job: env.ITS_PIPELINE, propagate: !changeRequest(), wait: !changeRequest(),
+                  parameters: [string(name: 'AGENT_INTEGRATION_TEST', value: 'Java'),
+                               string(name: 'BUILD_OPTS', value: "--with-opbeans-java --opbeans-java-image ${env.IMAGE} --opbeans-java-version ${env.GIT_BASE_COMMIT}"),
+                               string(name: 'GITHUB_CHECK_NAME', value: env.GITHUB_CHECK_ITS_NAME),
+                               string(name: 'GITHUB_CHECK_REPO', value: env.REPO),
+                               string(name: 'GITHUB_CHECK_SHA1', value: env.GIT_BASE_COMMIT)])
+            githubNotify(context: "${env.GITHUB_CHECK_ITS_NAME}", description: "${env.GITHUB_CHECK_ITS_NAME} ...", status: 'PENDING', targetUrl: "${env.JENKINS_URL}search/?q=${env.ITS_PIPELINE.replaceAll('/','+')}")
+          }
+        }
+        stage('Release') {
           when {
-            beforeInput true
             beforeAgent true
             allOf {
               anyOf {
@@ -98,7 +121,6 @@ pipeline {
                 branch "\\d+\\.\\d+"
                 branch "v\\d?"
                 tag "v\\d+\\.\\d+\\.\\d+*"
-                expression { return params.Run_As_Master_Branch }
               }
             }
           }
@@ -108,7 +130,7 @@ pipeline {
               unstash 'source'
               dir("${BASE_DIR}"){
                 dockerLogin(secret: "${DOCKERHUB_SECRET}", registry: 'docker.io')
-                sh "VERSION=${VERSION} make publish"
+                sh "VERSION=${BRANCH_NAME.equals('master') ? 'latest' : BRANCH_NAME} make publish"
               }
             }
           }
