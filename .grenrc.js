@@ -15,6 +15,7 @@ module.exports = {
         "No user affected": ["chore", "refactor", "perf", "test", "style"],
         "CI": ["ci"]
     },
+    "changelogFilename": "CHANGELOG.md",
     "template": {
         commit: ({ message, url, author, name }) => `- [${message}](${url}) - ${author ? `@${author}` : name}`,
         issue: "- {{labels}} {{name}} [{{text}}]({{url}})",
