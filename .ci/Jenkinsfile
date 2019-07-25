@@ -120,6 +120,7 @@ pipeline {
               anyOf {
                 branch 'master'
                 tag "v\\d+\\.\\d+\\.\\d+*"
+                changeRequest()
               }
             }
           }
@@ -130,7 +131,7 @@ pipeline {
                   deleteDir()
                   unstash 'source'
                   dir("${BASE_DIR}"){
-                    dockerLogin(secret: "${DOCKERHUB_SECRET}", registry: 'docker.io')
+                    //dockerLogin(secret: "${DOCKERHUB_SECRET}", registry: 'docker.io')
                     sh "VERSION=${BRANCH_NAME.equals('master') ? 'latest' : BRANCH_NAME} make publish"
                   }
                 }
