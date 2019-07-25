@@ -13,7 +13,9 @@ pipeline {
     PIPELINE_LOG_LEVEL = 'INFO'
     GITHUB_CHECK_ITS_NAME = 'Integration Tests'
     ITS_PIPELINE = 'apm-integration-tests-selector-mbp/master'
-    IMAGE = "docker.elastic.co/observability-ci/${env.REPO}"
+    DOCKER_REGISTRY_SECRET = 'secret/apm-team/ci/docker-registry/prod'
+    IMAGE = "${env.REGISTRY}/observability-ci/${env.REPO}"
+    REGISTRY = 'docker.elastic.co'
   }
   options {
     timeout(time: 1, unit: 'HOURS')
@@ -92,7 +94,7 @@ pipeline {
               unstash 'source'
               dir("${BASE_DIR}"){
                 sh "VERSION=${env.GIT_BASE_COMMIT} IMAGE=${env.IMAGE} make publish"
-                dockerLoginElasticRegistry()
+                dockerLogin(secret: "${env.DOCKER_REGISTRY_SECRET}", registry: "${env.REGISTRY}")
                 sh(label: "push docker image to ${env.IMAGE}", script: "docker push ${env.IMAGE}")
               }
             }
