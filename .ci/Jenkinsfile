@@ -93,9 +93,8 @@ pipeline {
               deleteDir()
               unstash 'source'
               dir("${BASE_DIR}"){
-                sh "VERSION=${env.GIT_BASE_COMMIT} IMAGE=${env.IMAGE} make publish"
                 dockerLogin(secret: "${env.DOCKER_REGISTRY_SECRET}", registry: "${env.REGISTRY}")
-                sh(label: "push docker image to ${env.IMAGE}", script: "docker push ${env.IMAGE}")
+                sh script: "VERSION=${env.GIT_BASE_COMMIT} IMAGE=${env.IMAGE} make publish", label: "push docker image to ${env.IMAGE}"
               }
             }
           }
