@@ -119,8 +119,6 @@ pipeline {
             allOf {
               anyOf {
                 branch 'master'
-                branch "\\d+\\.\\d+"
-                branch "v\\d?"
                 tag "v\\d+\\.\\d+\\.\\d+*"
               }
             }
