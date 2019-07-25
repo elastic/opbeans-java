@@ -35,7 +35,7 @@ pipeline {
       agent { label 'linux && immutable' }
       options { skipDefaultCheckout() }
       environment {
-        PATH = "${env.PATH}:${env.WORKSPACE}/bin"
+        PATH = "${env.PATH}:${env.WORKSPACE}/bin:${env.WORKSPACE}/${BASE_DIR}/.ci/scripts"
         HOME = "${env.WORKSPACE}"
       }
       stages {
