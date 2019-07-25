@@ -125,13 +125,30 @@ pipeline {
               }
             }
           }
-          steps {
-            withGithubNotify(context: 'Release') {
-              deleteDir()
-              unstash 'source'
-              dir("${BASE_DIR}"){
-                dockerLogin(secret: "${DOCKERHUB_SECRET}", registry: 'docker.io')
-                sh "VERSION=${BRANCH_NAME.equals('master') ? 'latest' : BRANCH_NAME} make publish"
+          stages {
+            stage('Publish') {
+              steps {
+                withGithubNotify(context: 'Publish') {
+                  deleteDir()
+                  unstash 'source'
+                  dir("${BASE_DIR}"){
+                    dockerLogin(secret: "${DOCKERHUB_SECRET}", registry: 'docker.io')
+                    sh "VERSION=${BRANCH_NAME.equals('master') ? 'latest' : BRANCH_NAME} make publish"
+                  }
+                }
+              }
+            }
+            stage('Release Notes') {
+              steps {
+                withGithubNotify(context: 'Release Notes') {
+                  deleteDir()
+                  unstash 'source'
+                  dir("${BASE_DIR}"){
+                    withCredentials([string(credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7', variable: 'GREN_GITHUB_TOKEN')]) {
+                      sh(label: 'Creating Release Notes', script: './ci/scripts/release-notes.sh')
+                    }
+                  }
+                }
               }
             }
           }
