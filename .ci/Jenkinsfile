@@ -14,7 +14,7 @@ pipeline {
     GITHUB_CHECK_ITS_NAME = 'Integration Tests'
     ITS_PIPELINE = 'apm-integration-tests-selector-mbp/master'
     DOCKER_REGISTRY_SECRET = 'secret/apm-team/ci/docker-registry/prod'
-    IMAGE = "${env.REGISTRY}/observability-ci/${env.REPO}"
+    TMP_IMAGE = "${env.REGISTRY}/observability-ci/${env.REPO}"
     REGISTRY = 'docker.elastic.co'
   }
   options {
@@ -94,7 +94,7 @@ pipeline {
               unstash 'source'
               dir("${BASE_DIR}"){
                 dockerLogin(secret: "${env.DOCKER_REGISTRY_SECRET}", registry: "${env.REGISTRY}")
-                sh script: "VERSION=${env.GIT_BASE_COMMIT} IMAGE=${env.IMAGE} make publish", label: "push docker image to ${env.IMAGE}"
+                sh script: "VERSION=${env.GIT_BASE_COMMIT} IMAGE=${env.TMP_IMAGE} make publish", label: "push docker image to ${env.IMAGE}"
               }
             }
           }
@@ -106,7 +106,7 @@ pipeline {
             // TODO: AGENT_INTEGRATION_TEST = Opbeans when the apm-integration-testing gets merged
             build(job: env.ITS_PIPELINE, propagate: !changeRequest(), wait: !changeRequest(),
                   parameters: [string(name: 'AGENT_INTEGRATION_TEST', value: 'Java'),
-                               string(name: 'BUILD_OPTS', value: "--with-opbeans-java --opbeans-java-image ${env.IMAGE} --opbeans-java-version ${env.GIT_BASE_COMMIT}"),
+                               string(name: 'BUILD_OPTS', value: "--with-opbeans-java --opbeans-java-image ${env.TMP_IMAGE} --opbeans-java-version ${env.GIT_BASE_COMMIT}"),
                                string(name: 'GITHUB_CHECK_NAME', value: env.GITHUB_CHECK_ITS_NAME),
                                string(name: 'GITHUB_CHECK_REPO', value: env.REPO),
                                string(name: 'GITHUB_CHECK_SHA1', value: env.GIT_BASE_COMMIT)])
@@ -144,7 +144,7 @@ pipeline {
                   unstash 'source'
                   dir("${BASE_DIR}"){
                     withCredentials([string(credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7', variable: 'GREN_GITHUB_TOKEN')]) {
-                      sh(label: 'Creating Release Notes', script: './ci/scripts/release-notes.sh')
+                      sh(label: 'Creating Release Notes', script: '.ci/scripts/release-notes.sh')
                     }
                   }
                 }
