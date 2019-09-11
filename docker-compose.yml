@@ -114,6 +114,12 @@ services:
       elasticsearch:
         condition: service_healthy
 
+  wait:
+    image: busybox
+    depends_on:
+      opbeans-java:
+        condition: service_healthy
+        
 volumes:
   esdata:
     driver: local
