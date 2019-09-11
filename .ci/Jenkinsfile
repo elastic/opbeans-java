@@ -16,6 +16,8 @@ pipeline {
     DOCKER_REGISTRY_SECRET = 'secret/apm-team/ci/docker-registry/prod'
     TMP_IMAGE = "${env.REGISTRY}/observability-ci/${env.REPO}"
     REGISTRY = 'docker.elastic.co'
+    PATH = "${env.PATH}:${env.WORKSPACE}/bin:${env.WORKSPACE}/${BASE_DIR}/.ci/scripts"
+    HOME = "${env.WORKSPACE}"
   }
   options {
     timeout(time: 1, unit: 'HOURS')
@@ -31,123 +33,113 @@ pipeline {
     issueCommentTrigger('(?i).*(?:jenkins\\W+)?run\\W+(?:the\\W+)?tests(?:\\W+please)?.*')
   }
   stages {
-    stage('Initializing'){
-      agent { label 'linux && immutable' }
+    /**
+     Checkout the code and stash it, to use it on other stages.
+    */
+    stage('Checkout') {
       options { skipDefaultCheckout() }
-      environment {
-        PATH = "${env.PATH}:${env.WORKSPACE}/bin:${env.WORKSPACE}/${BASE_DIR}/.ci/scripts"
-        HOME = "${env.WORKSPACE}"
+      steps {
+        deleteDir()
+        gitCheckout(basedir: "${BASE_DIR}")
+        stash allowEmpty: true, name: 'source', useDefaultExcludes: false
+      }
+    }
+    /**
+    Build the project from code..
+    */
+    stage('Build') {
+      steps {
+        withGithubNotify(context: 'Build') {
+          deleteDir()
+          unstash 'source'
+          dir(BASE_DIR){
+            sh 'make build'
+          }
+        }
+      }
+    }
+    /**
+    Execute unit tests.
+    */
+    stage('Test') {
+      steps {
+        withGithubNotify(context: 'Test', tab: 'tests') {
+          deleteDir()
+          unstash 'source'
+          dir(BASE_DIR){
+            sh "make test"
+          }
+        }
+      }
+      post {
+        always {
+          junit(allowEmptyResults: true,
+            keepLongStdio: true,
+            testResults: "${BASE_DIR}/**/junit-*.xml")
+        }
+      }
+    }
+    /**
+    Push docker image to the staging docker registry
+    */
+    stage('Staging') {
+      steps {
+        withGithubNotify(context: 'Staging') {
+          deleteDir()
+          unstash 'source'
+          dir(BASE_DIR){
+            dockerLogin(secret: "${env.DOCKER_REGISTRY_SECRET}", registry: "${env.REGISTRY}")
+            sh script: "VERSION=${env.GIT_BASE_COMMIT} IMAGE=${env.TMP_IMAGE} make publish", label: "push docker image to ${env.IMAGE}"
+          }
+        }
+      }
+    }
+    stage('Integration Tests') {
+      agent none
+      steps {
+        log(level: 'INFO', text: 'Launching Async ITs')
+        build(job: env.ITS_PIPELINE, propagate: !env.containsKey('CHANGE_ID'), wait: !env.containsKey('CHANGE_ID'),
+              parameters: [string(name: 'AGENT_INTEGRATION_TEST', value: 'Opbeans'),
+                           string(name: 'BUILD_OPTS', value: "--with-opbeans-java --opbeans-java-image ${env.TMP_IMAGE} --opbeans-java-version ${env.GIT_BASE_COMMIT}"),
+                           string(name: 'GITHUB_CHECK_NAME', value: env.GITHUB_CHECK_ITS_NAME),
+                           string(name: 'GITHUB_CHECK_REPO', value: env.REPO),
+                           string(name: 'GITHUB_CHECK_SHA1', value: env.GIT_BASE_COMMIT)])
+        githubNotify(context: "${env.GITHUB_CHECK_ITS_NAME}", description: "${env.GITHUB_CHECK_ITS_NAME} ...", status: 'PENDING', targetUrl: "${env.JENKINS_URL}search/?q=${env.ITS_PIPELINE.replaceAll('/','+')}")
+      }
+    }
+    stage('Release') {
+      when {
+        beforeAgent true
+        allOf {
+          anyOf {
+            branch 'master'
+            tag "v\\d+\\.\\d+\\.\\d+*"
+            changeRequest()
+          }
+        }
       }
       stages {
-        /**
-         Checkout the code and stash it, to use it on other stages.
-        */
-        stage('Checkout') {
+        stage('Publish') {
           steps {
-            deleteDir()
-            gitCheckout(basedir: "${BASE_DIR}")
-            stash allowEmpty: true, name: 'source', useDefaultExcludes: false
-          }
-        }
-        /**
-        Build the project from code..
-        */
-        stage('Build') {
-          steps {
-            withGithubNotify(context: 'Build') {
+            withGithubNotify(context: 'Publish') {
               deleteDir()
               unstash 'source'
-              dir("${BASE_DIR}"){
-                sh 'make build'
+              dir(BASE_DIR){
+                //dockerLogin(secret: "${DOCKERHUB_SECRET}", registry: 'docker.io')
+                sh "VERSION=${BRANCH_NAME.equals('master') ? 'latest' : BRANCH_NAME} make publish"
               }
             }
           }
         }
-        /**
-        Execute unit tests.
-        */
-        stage('Test') {
+        stage('Release Notes') {
           steps {
-            withGithubNotify(context: 'Test', tab: 'tests') {
+            withGithubNotify(context: 'Release Notes') {
               deleteDir()
               unstash 'source'
-              dir("${BASE_DIR}"){
-                sh "make test"
-              }
-            }
-          }
-          post {
-            always {
-              junit(allowEmptyResults: true,
-                keepLongStdio: true,
-                testResults: "${BASE_DIR}/**/junit-*.xml")
-            }
-          }
-        }
-        /**
-        Push docker image to the staging docker registry
-        */
-        stage('Staging') {
-          steps {
-            withGithubNotify(context: 'Staging') {
-              deleteDir()
-              unstash 'source'
-              dir("${BASE_DIR}"){
+              dir(BASE_DIR){
                 dockerLogin(secret: "${env.DOCKER_REGISTRY_SECRET}", registry: "${env.REGISTRY}")
-                sh script: "VERSION=${env.GIT_BASE_COMMIT} IMAGE=${env.TMP_IMAGE} make publish", label: "push docker image to ${env.IMAGE}"
-              }
-            }
-          }
-        }
-        stage('Integration Tests') {
-          agent none
-          steps {
-            log(level: 'INFO', text: 'Launching Async ITs')
-            // TODO: AGENT_INTEGRATION_TEST = Opbeans when the apm-integration-testing gets merged
-            build(job: env.ITS_PIPELINE, propagate: !changeRequest(), wait: !changeRequest(),
-                  parameters: [string(name: 'AGENT_INTEGRATION_TEST', value: 'Java'),
-                               string(name: 'BUILD_OPTS', value: "--with-opbeans-java --opbeans-java-image ${env.TMP_IMAGE} --opbeans-java-version ${env.GIT_BASE_COMMIT}"),
-                               string(name: 'GITHUB_CHECK_NAME', value: env.GITHUB_CHECK_ITS_NAME),
-                               string(name: 'GITHUB_CHECK_REPO', value: env.REPO),
-                               string(name: 'GITHUB_CHECK_SHA1', value: env.GIT_BASE_COMMIT)])
-            githubNotify(context: "${env.GITHUB_CHECK_ITS_NAME}", description: "${env.GITHUB_CHECK_ITS_NAME} ...", status: 'PENDING', targetUrl: "${env.JENKINS_URL}search/?q=${env.ITS_PIPELINE.replaceAll('/','+')}")
-          }
-        }
-        stage('Release') {
-          when {
-            beforeAgent true
-            allOf {
-              anyOf {
-                branch 'master'
-                tag "v\\d+\\.\\d+\\.\\d+*"
-                changeRequest()
-              }
-            }
-          }
-          stages {
-            stage('Publish') {
-              steps {
-                withGithubNotify(context: 'Publish') {
-                  deleteDir()
-                  unstash 'source'
-                  dir("${BASE_DIR}"){
-                    //dockerLogin(secret: "${DOCKERHUB_SECRET}", registry: 'docker.io')
-                    sh "VERSION=${BRANCH_NAME.equals('master') ? 'latest' : BRANCH_NAME} make publish"
-                  }
-                }
-              }
-            }
-            stage('Release Notes') {
-              steps {
-                withGithubNotify(context: 'Release Notes') {
-                  deleteDir()
-                  unstash 'source'
-                  dir("${BASE_DIR}"){
-                    dockerLogin(secret: "${env.DOCKER_REGISTRY_SECRET}", registry: "${env.REGISTRY}")
-                    withCredentials([string(credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7', variable: 'GREN_GITHUB_TOKEN')]) {
-                      sh(label: 'Creating Release Notes', script: '.ci/scripts/release-notes.sh')
-                    }
-                  }
+                withCredentials([string(credentialsId: '2a9602aa-ab9f-4e52-baf3-b71ca88469c7', variable: 'GREN_GITHUB_TOKEN')]) {
+                  sh(label: 'Creating Release Notes', script: '.ci/scripts/release-notes.sh')
                 }
               }
             }
