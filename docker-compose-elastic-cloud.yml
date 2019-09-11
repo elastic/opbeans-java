@@ -3,12 +3,12 @@ services:
   opbeans-java:
     extends:
       file: docker-compose.yml
-      service: opbeans-node
+      service: opbeans-java
 
   apm-server:
     extends:
       file: docker-compose.yml
-      service: opbeans-node
+      service: apm-server
     command: >
       apm-server -e
         -E apm-server.frontend.enabled=true
