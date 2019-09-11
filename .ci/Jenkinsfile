@@ -97,8 +97,8 @@ pipeline {
     stage('Integration Tests') {
       agent none
       steps {
-        build(job: env.ITS_PIPELINE, propagate: "${env.containsKey('CHANGE_ID') ? false : true}",
-              wait: "${env.containsKey('CHANGE_ID') ? false : true}",
+        build(job: env.ITS_PIPELINE, propagate: env.CHANGE_ID?.trim() ? false : true,
+              wait: env.CHANGE_ID?.trim() ? false : true,
               parameters: [string(name: 'AGENT_INTEGRATION_TEST', value: 'Opbeans'),
                            string(name: 'BUILD_OPTS', value: "--with-opbeans-java --opbeans-java-image ${env.TMP_IMAGE} --opbeans-java-version ${env.GIT_BASE_COMMIT}"),
                            string(name: 'GITHUB_CHECK_NAME', value: env.GITHUB_CHECK_ITS_NAME),
