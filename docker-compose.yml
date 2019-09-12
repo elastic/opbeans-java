@@ -18,8 +18,6 @@ services:
       - ELASTIC_APM_JS_SERVER_URL=${ELASTIC_APM_JS_SERVER_URL:-http://localhost:8200}
       - OPBEANS_SERVER_PORT=${OPBEANS_SERVER_PORT:-8000}
     depends_on:
-      elasticsearch:
-        condition: service_healthy
       apm-server:
         condition: service_healthy
     healthcheck:
