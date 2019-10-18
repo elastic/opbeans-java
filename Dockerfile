@@ -29,9 +29,11 @@ RUN export JAVA_AGENT_BUILT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.arg
 #Run application Stage
 #We only need java
 
-FROM openjdk:8u212-jre-alpine
+FROM openjdk:10-jre-slim
 
 RUN export
+RUN apt-get update && apt-get install -y -qq curl
+RUN rm -f /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin || true
 WORKDIR /app
 COPY --from=0 /usr/src/java-app/*.jar ./
 
