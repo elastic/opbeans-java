@@ -4,6 +4,8 @@
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="co.elastic.logging.logback.EcsEncoder">
             <serviceName>opbeans-java</serviceName>
+            <!-- uncomment this to have almost-human readable stack traces in log output -->
+            <!-- <stackTraceAsArray>true</stackTraceAsArray> -->
         </encoder>
     </appender>
     <root level="INFO">
