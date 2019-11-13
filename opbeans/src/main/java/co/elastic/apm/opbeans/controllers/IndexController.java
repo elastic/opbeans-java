@@ -20,7 +20,6 @@
 package co.elastic.apm.opbeans.controllers;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.QueryParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
