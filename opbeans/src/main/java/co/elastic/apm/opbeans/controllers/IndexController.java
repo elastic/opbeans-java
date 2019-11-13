@@ -20,11 +20,13 @@
 package co.elastic.apm.opbeans.controllers;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.QueryParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
@@ -39,8 +41,15 @@ public class IndexController {
     }
 
     @RequestMapping({ "/is-it-coffee-time" })
-    public String error() {
-        throw new RuntimeException("Demo exception");
+    public String error(@RequestParam(value = "cause", required = false) String causeMsg) {
+        String msg = "Demo exception";
+        if (causeMsg != null) {
+            // allows to test for chained exceptions
+            throw new RuntimeException(msg, new RuntimeException(causeMsg));
+        } else {
+            // regular non-chained exception
+            throw new RuntimeException(msg);
+        }
     }
 
     @RequestMapping(value = { "/rum-config.js" })
