@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
@@ -40,7 +41,7 @@ public class IndexController {
 
     @RequestMapping({ "/is-it-coffee-time" })
     public String error() {
-        throw new RuntimeException("Demo exception");
+        throw new RuntimeException("Demo exception", new RuntimeException("root cause"));
     }
 
     @RequestMapping(value = { "/rum-config.js" })
