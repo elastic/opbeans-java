@@ -40,15 +40,8 @@ public class IndexController {
     }
 
     @RequestMapping({ "/is-it-coffee-time" })
-    public String error(@RequestParam(value = "cause", required = false) String causeMsg) {
-        String msg = "Demo exception";
-        if (causeMsg != null) {
-            // allows to test for chained exceptions
-            throw new RuntimeException(msg, new RuntimeException(causeMsg));
-        } else {
-            // regular non-chained exception
-            throw new RuntimeException(msg);
-        }
+    public String error() {
+        throw new RuntimeException("Demo exception", new RuntimeException("root cause"));
     }
 
     @RequestMapping(value = { "/rum-config.js" })
