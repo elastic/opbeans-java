@@ -1,6 +1,4 @@
-
 PORT ?= 8000
-
 IMAGE ?= opbeans/opbeans-java
 VERSION ?= latest
 LTS_ALPINE ?= 12-alpine
