@@ -1,4 +1,4 @@
-[![Build Status](https://apm-ci.elastic.co/job/apm-agent-java/job/opbeans-java-mbp/job/master/badge/icon)](https://apm-ci.elastic.co/job/apm-agent-java/job/opbeans-java-mbp/job/master/)
+[![Build Status](https://apm-ci.elastic.co/buildStatus/icon?job=apm-agent-java%2Fopbeans-java-mbp%2Fmaster)](https://apm-ci.elastic.co/job/apm-agent-java/job/opbeans-java-mbp/job/master/)
 
 # opbeans-java
 This is an implementation of the [Opbeans Demo app](http://opbeans.com) in Java as an [Spring Boot](https://projects.spring.io/spring-boot/) application . It uses the same

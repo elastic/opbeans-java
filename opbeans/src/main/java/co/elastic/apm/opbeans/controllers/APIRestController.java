@@ -28,6 +28,8 @@ import co.elastic.apm.opentracing.ElasticApmTracer;
 import io.opentracing.Scope;
 import io.opentracing.Span;
 import io.opentracing.Tracer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,6 +51,9 @@ import co.elastic.apm.opbeans.repositories.TopProduct;
 @RestController
 @RequestMapping("/api")
 class APIRestController{
+
+    private static final Logger logger = LoggerFactory.getLogger(APIRestController.class);
+    private static final int TOP_SALES_SIZE = 3;
 
     private final ProductRepository productRepository;
     private final CustomerRepository customerRepository;
@@ -89,7 +94,8 @@ class APIRestController{
 
     @GetMapping("/products/top")
     Collection<TopProduct> topProducts() {
-        return productRepository.findTopSales(PageRequest.of(0, 3));
+        logger.info("Finding top {} sales", TOP_SALES_SIZE);
+        return productRepository.findTopSales(PageRequest.of(0, TOP_SALES_SIZE));
     }
 
     @GetMapping("/customers")
