@@ -35,3 +35,4 @@ hs_err_pid*
 # For the BATS testing
 bats/
 target/
+pom.xml.versionsBackup
