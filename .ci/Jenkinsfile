@@ -1,4 +1,4 @@
 #!/usr/bin/env groovy
-@Library('apm@opbeans-release') _
+@Library('apm@current') _
 
 opbeansPipeline()
