@@ -1,0 +1,25 @@
+---
+- job:
+    name: apm-agent-java/opbeans-java-selector
+    display-name: Opbeans Java selector
+    description: Opbeans Java selector
+    view: APM-CI
+    project-type: pipeline
+    parameters:
+      - string:
+          name: branch_specifier
+          default: master
+          description: the Git branch specifier to build
+    pipeline-scm:
+      script-path: .ci/selector.groovy
+      scm:
+        - git:
+            url: git@github.com:elastic/opbeans-java.git
+            refspec: +refs/heads/*:refs/remotes/origin/*
+            wipe-workspace: 'True'
+            name: origin
+            shallow-clone: true
+            credentials-id: f6c7695a-671e-4f4f-a331-acdce44ff9ba
+            reference-repo: /var/lib/jenkins/.git-references/opbeans-java.git
+            branches:
+              - $branch_specifier

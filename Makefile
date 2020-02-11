@@ -2,6 +2,8 @@ PORT ?= 8000
 IMAGE ?= opbeans/opbeans-java
 VERSION ?= latest
 LTS_ALPINE ?= 12-alpine
+JAVA_AGENT_BRANCH ?= master
+JAVA_AGENT_REPO ?= elastic/apm-agent-java
 
 .PHONY: help
 .DEFAULT_GOAL := help
@@ -12,7 +14,9 @@ help: ## Display this help text
 all: build test
 
 build: ## Build docker image
-	@docker build --file Dockerfile --tag=${IMAGE}:${VERSION} .
+	@docker build --file Dockerfile --tag=${IMAGE}:${VERSION} \
+				--build-arg JAVA_AGENT_BRANCH=${JAVA_AGENT_BRANCH} \
+				--build-arg JAVA_AGENT_REPO=${JAVA_AGENT_REPO} .
 
 bats: ## Install bats in the project itself
 	@git clone https://github.com/sstephenson/bats.git

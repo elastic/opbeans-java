@@ -1,7 +1,12 @@
 version: "2.1"
 services:
   opbeans-java:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - JAVA_AGENT_BRANCH=${JAVA_AGENT_BRANCH:-master}
+        - JAVA_AGENT_REPO=${JAVA_AGENT_REPO:-elastic/apm-agent-java}
     image: opbeans/opbeans-java:latest
     container_name: opbeans-java
     ports:
