@@ -14,6 +14,7 @@ help: ## Display this help text
 all: build test
 
 build: ## Build docker image
+	@echo "JAVA_AGENT_BRANCH=${JAVA_AGENT_BRANCH} JAVA_AGENT_REPO=${JAVA_AGENT_REPO}"
 	@docker build --file Dockerfile --tag=${IMAGE}:${VERSION} \
 				--build-arg JAVA_AGENT_BRANCH=${JAVA_AGENT_BRANCH} \
 				--build-arg JAVA_AGENT_REPO=${JAVA_AGENT_REPO} .
