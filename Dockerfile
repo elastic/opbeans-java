@@ -29,7 +29,7 @@ RUN export JAVA_AGENT_BUILT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.arg
 #Run application Stage
 #We only need java
 
-FROM openjdk:10-jre-slim
+FROM adoptopenjdk:11-jre-hotspot
 
 RUN export
 RUN apt-get update \
