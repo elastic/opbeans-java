@@ -57,5 +57,12 @@ Another possible way is to create a different property file like application-cus
 
 ## Demo notes
 
-The application has a built-in bug that you can trigger by
-navigating to the path `/is-it-coffee-time`.
+The application has a built-in bug that you can trigger by navigating to the path `/is-it-coffee-time`.
+
+There is a load generator Docker image that you can build with the following command:
+
+    docker build -t opbeans-java-loadgen -f loadgen/Dockerfile loadgen
+
+Then you can run `opbeans-java-loadgen` as follows:
+
+    docker run --name opbeans-java-loadgen --network=host -d opbeans-java-loadgen 
