@@ -38,6 +38,15 @@ RUN apt-get update \
 WORKDIR /app
 COPY --from=0 /usr/src/java-app/*.jar ./
 
+LABEL \
+    org.label-schema.schema-version="1.0" \
+    org.label-schema.vendor="Elastic" \
+    org.label-schema.name="opbeans-java" \
+    org.label-schema.version="1.3.0" \
+    org.label-schema.url="https://hub.docker.com/r/opbeans/opbeans-java" \
+    org.label-schema.vcs-url="https://github.com/elastic/opbeans-java" \
+    org.label-schema.license="MIT"
+
 CMD java -javaagent:/app/elastic-apm-agent.jar -Dspring.profiles.active=${OPBEANS_JAVA_PROFILE:-}\
                                         -Dserver.port=${OPBEANS_SERVER_PORT:-}\
                                         -Dserver.address=${OPBEANS_SERVER_ADDRESS:-0.0.0.0}\
