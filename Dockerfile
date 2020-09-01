@@ -2,7 +2,7 @@
 
 #Build application stage
 #We need maven.
-FROM maven:3.5.3-jdk-11
+FROM maven:3.6-jdk-12
 ARG JAVA_AGENT_BRANCH=master
 ARG JAVA_AGENT_REPO=elastic/apm-agent-java
 
@@ -21,7 +21,8 @@ RUN cp -v /usr/src/java-code/opbeans/target/*.jar /usr/src/java-app/app.jar
 #build the agent
 WORKDIR /usr/src/java-agent-code
 RUN curl -L https://github.com/$JAVA_AGENT_REPO/archive/$JAVA_AGENT_BRANCH.tar.gz | tar --strip-components=1 -xz
-RUN mvn -q -B package -DskipTests
+ENV MAVEN_CONFIG=-Dmaven.repo.local=.m2
+RUN ./mvnw clean package -DskipTests=true -Dmaven.javadoc.skip=true
 RUN export JAVA_AGENT_BUILT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive org.codehaus.mojo:exec-maven-plugin:1.3.1:exec) \
     && cp -v /usr/src/java-agent-code/elastic-apm-agent/target/elastic-apm-agent-${JAVA_AGENT_BUILT_VERSION}.jar /usr/src/java-app/elastic-apm-agent.jar
 
