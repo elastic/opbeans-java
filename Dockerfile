@@ -28,7 +28,6 @@ RUN ./mvnw clean package \
   -Dhttps.protocols=TLSv1.2 \
   -Dmaven.wagon.http.retryHandler.count=3 \
   -Dhttp.keepAlive=false \
-  -Dmaven.wagon.http.pool=false \
   -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 RUN export JAVA_AGENT_BUILT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive org.codehaus.mojo:exec-maven-plugin:1.3.1:exec) \
     && cp -v /usr/src/java-agent-code/elastic-apm-agent/target/elastic-apm-agent-${JAVA_AGENT_BUILT_VERSION}.jar /usr/src/java-app/elastic-apm-agent.jar
