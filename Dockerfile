@@ -18,7 +18,7 @@ COPY --from=opbeans/opbeans-frontend:latest /app/build src/main/resources/public
 RUN mvn -q --batch-mode package \
   -DskipTests \
   -Dmaven.repo.local=.m2 \
-  -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+  --no-transfer-progress \
   -Dmaven.wagon.http.retryHandler.count=3 \
   -Dhttps.protocols=TLSv1.2 \
   -Dhttp.keepAlive=false \
@@ -32,7 +32,7 @@ WORKDIR /usr/src/java-agent-code
 RUN curl -L https://github.com/$JAVA_AGENT_REPO/archive/$JAVA_AGENT_BRANCH.tar.gz | tar --strip-components=1 -xz
 RUN mvn -q --batch-mode clean package \
   -Dmaven.repo.local=.m2 \
-  -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+  --no-transfer-progress \
   -Dmaven.wagon.http.retryHandler.count=3 \
   -Dhttps.protocols=TLSv1.2 \
   -Dhttp.keepAlive=false \
