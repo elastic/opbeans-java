@@ -22,13 +22,18 @@ package co.elastic.apm.opbeans.repositories;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public interface ProductList {
-	long getId();
 
+	@JsonProperty("id")
+	Long getId();
+
+	@JsonProperty("sku")
 	String getSku();
 
+	@JsonProperty("name")
 	String getName();
 
-	long getStock();
+	@JsonProperty("stock")
+	Long getStock();
 
 	@JsonProperty("type_name")
 	String getTypeName();

@@ -20,6 +20,7 @@
 package co.elastic.apm.opbeans.repositories;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -38,5 +39,5 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Numbers getFinancial();
 
     @Query("select p.id as id, p.sku as sku, p.name as name, p.description as description, p.cost as cost, p.sellingPrice as sellingPrice, p.stock as stock, t.id as typeId, t.name as typeName, (select sum(o.amount) from order_lines o where o.product=p) as sold from products as p  LEFT JOIN p.type as t where p.id=?1")
-    ProductDetail getOneDetail(long id);
+    Optional<ProductDetail> getOneDetail(long id);
 }

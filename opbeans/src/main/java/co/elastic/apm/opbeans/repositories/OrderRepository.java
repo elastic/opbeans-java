@@ -20,6 +20,7 @@
 package co.elastic.apm.opbeans.repositories;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -31,5 +32,5 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<OrderList> findAllList();
 
     @Query("SELECT o.id as id, o.createdAt as createdAt, c.fullName as customerName, c.id as customerId FROM orders o LEFT JOIN o.customer as c where o.id=?1")
-    OrderDetail getOneDetail(long id);
+    Optional<OrderDetail> getOneDetail(long id);
 }

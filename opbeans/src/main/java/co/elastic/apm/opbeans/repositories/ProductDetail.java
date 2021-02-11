@@ -22,20 +22,27 @@ package co.elastic.apm.opbeans.repositories;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public interface ProductDetail {
-	long getId();
 
+	@JsonProperty("id")
+	Long getId();
+
+	@JsonProperty("sku")
 	String getSku();
 
+	@JsonProperty("name")
 	String getName();
 
+	@JsonProperty("description")
 	String getDescription();
 
-	double getCost();
+	@JsonProperty("cost")
+	Double getCost();
 
 	@JsonProperty("selling_price")
 	double getSellingPrice();
 
-	long getStock();
+	@JsonProperty("cost")
+	Long getStock();
 
 	@JsonProperty("type_id")
 	long getTypeId();
@@ -43,5 +50,6 @@ public interface ProductDetail {
 	@JsonProperty("type_name")
 	String getTypeName();
 
+	@JsonProperty("sold")
 	Long getSold();
 }

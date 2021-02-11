@@ -19,10 +19,16 @@
  */
 package co.elastic.apm.opbeans.repositories;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public interface Numbers {
-    public double getRevenue();
 
-    public double getCost();
+    @JsonProperty("revenue")
+    Double getRevenue();
 
-    public double getProfit();
+    @JsonProperty("cost")
+    Double getCost();
+
+    @JsonProperty("profit")
+    Double getProfit();
 }
