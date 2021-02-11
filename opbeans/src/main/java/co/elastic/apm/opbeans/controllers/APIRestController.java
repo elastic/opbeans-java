@@ -19,24 +19,8 @@
  */
 package co.elastic.apm.opbeans.controllers;
 
-import java.util.Collection;
-import java.util.List;
-
 import co.elastic.apm.api.CaptureSpan;
 import co.elastic.apm.api.ElasticApm;
-import co.elastic.apm.opentracing.ElasticApmTracer;
-import io.opentracing.Scope;
-import io.opentracing.Span;
-import io.opentracing.Tracer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import co.elastic.apm.opbeans.model.Customer;
 import co.elastic.apm.opbeans.repositories.CustomerRepository;
 import co.elastic.apm.opbeans.repositories.OrderDetail;
@@ -47,6 +31,25 @@ import co.elastic.apm.opbeans.repositories.ProductList;
 import co.elastic.apm.opbeans.repositories.ProductRepository;
 import co.elastic.apm.opbeans.repositories.Stats;
 import co.elastic.apm.opbeans.repositories.TopProduct;
+import co.elastic.apm.opentracing.ElasticApmTracer;
+import io.opentracing.Scope;
+import io.opentracing.Span;
+import io.opentracing.Tracer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
 
 @RestController
 @RequestMapping("/api")
@@ -58,14 +61,14 @@ class APIRestController{
     private final ProductRepository productRepository;
     private final CustomerRepository customerRepository;
     private final OrderRepository orderRepository;
-    private Tracer tracer;
+    private final Tracer tracer;
 
     @Autowired
     APIRestController(ProductRepository productRepository, CustomerRepository customerRepository, OrderRepository orderRepository) {
         this.productRepository = productRepository;
         this.customerRepository = customerRepository;
         this.orderRepository = orderRepository;
-        tracer = new ElasticApmTracer();
+        this.tracer = new ElasticApmTracer();
     }
 
     @GetMapping(value = "/products")
@@ -77,14 +80,19 @@ class APIRestController{
 
     @GetMapping("/products/{productId}")
     ProductDetail product(@PathVariable long productId) {
+        Optional<ProductDetail> result = Optional.empty();
         final Span span = tracer.buildSpan("OpenTracing product span")
                 .withTag("productId", Long.toString(productId))
                 .start();
         try (Scope scope = tracer.scopeManager().activate(span, false)) {
-            return productRepository.getOneDetail(productId);
+            result =  productRepository.getOneDetail(productId);
         } finally {
             span.finish();
         }
+
+        // Spring MVC uses exceptions to return a 404, thus we keep that out of the OTracing span to avoid
+        // any confusion as it's not an actual server error but a way to return a client error.
+        return result.orElseThrow(notFound());
     }
 
     @GetMapping("/products/{productId}/customers")
@@ -105,7 +113,8 @@ class APIRestController{
 
     @GetMapping("/customers/{customerId}")
     Customer customer(@PathVariable long customerId) {
-        return customerRepository.getOne(customerId);
+        return customerRepository.findById(customerId)
+                .orElseThrow(notFound());
     }
 
     @GetMapping("/orders")
@@ -115,12 +124,17 @@ class APIRestController{
 
     @GetMapping("/orders/{orderId}")
     OrderDetail order(@PathVariable long orderId) {
-        return orderRepository.getOneDetail(orderId);
+        return orderRepository.getOneDetail(orderId)
+                .orElseThrow(notFound());
     }
 
     @GetMapping("/stats")
     Stats stats() {
         return new Stats(productRepository.count(), customerRepository.count(), orderRepository.count(), productRepository.getFinancial());
+    }
+
+    private Supplier<ResponseStatusException> notFound() {
+        return () -> new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
 
 }
