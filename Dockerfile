@@ -2,7 +2,7 @@
 
 #Build application stage
 #We need maven.
-FROM maven:3.5.3-jdk-10
+FROM maven:3.6.3-jdk-11
 ARG JAVA_AGENT_BRANCH=master
 ARG JAVA_AGENT_REPO=elastic/apm-agent-java
 
@@ -29,7 +29,7 @@ RUN export JAVA_AGENT_BUILT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.arg
 #Run application Stage
 #We only need java
 
-FROM openjdk:10-jre-slim
+FROM openjdk:11-jre-slim
 
 RUN export
 RUN apt-get update \
