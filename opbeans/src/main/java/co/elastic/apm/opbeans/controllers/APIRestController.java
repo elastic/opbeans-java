@@ -22,6 +22,7 @@ package co.elastic.apm.opbeans.controllers;
 import co.elastic.apm.api.CaptureSpan;
 import co.elastic.apm.api.ElasticApm;
 import co.elastic.apm.opbeans.model.Customer;
+import co.elastic.apm.opbeans.model.Order;
 import co.elastic.apm.opbeans.repositories.CustomerRepository;
 import co.elastic.apm.opbeans.repositories.OrderDetail;
 import co.elastic.apm.opbeans.repositories.OrderList;
@@ -32,6 +33,7 @@ import co.elastic.apm.opbeans.repositories.ProductRepository;
 import co.elastic.apm.opbeans.repositories.Stats;
 import co.elastic.apm.opbeans.repositories.TopProduct;
 import co.elastic.apm.opentracing.ElasticApmTracer;
+import com.fasterxml.jackson.databind.JsonNode;
 import io.opentracing.Scope;
 import io.opentracing.Span;
 import io.opentracing.Tracer;
@@ -42,10 +44,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.sql.Date;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -126,6 +132,19 @@ class APIRestController{
     OrderDetail order(@PathVariable long orderId) {
         return orderRepository.getOneDetail(orderId)
                 .orElseThrow(notFound());
+    }
+
+    @PostMapping("/orders/")
+    OrderDetail createOrder(@RequestBody JsonNode orderJson) {
+        Customer customer = customerRepository.findById(orderJson.get("customer_id").asLong())
+                .orElseThrow(notFound());
+
+        Order order = new Order();
+        order.setCreatedAt(Date.from(Instant.now()));
+        order.setCustomer(customer);
+
+        Order savedOrder = orderRepository.save(order);
+        return order(savedOrder.getId());
     }
 
     @GetMapping("/stats")
