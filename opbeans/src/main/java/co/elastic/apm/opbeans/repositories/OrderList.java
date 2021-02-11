@@ -24,7 +24,9 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public interface OrderList {
-    long getId();
+
+    @JsonProperty("id")
+    Long getId();
 
     @JsonProperty("customer_name")
     String getCustomerName();

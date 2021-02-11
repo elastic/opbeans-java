@@ -19,14 +19,22 @@
  */
 package co.elastic.apm.opbeans.repositories;
 
-public interface TopProduct {
-    long getId();
+import com.fasterxml.jackson.annotation.JsonProperty;
 
+public interface TopProduct {
+
+    @JsonProperty("id")
+    Long getId();
+
+    @JsonProperty("sku")
     String getSku();
 
+    @JsonProperty("name")
     String getName();
 
-    long getStock();
+    @JsonProperty("stock")
+    Long getStock();
 
-    long getSold();
+    @JsonProperty("sold")
+    Long getSold();
 }

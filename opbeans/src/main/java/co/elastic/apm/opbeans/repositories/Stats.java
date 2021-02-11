@@ -19,35 +19,41 @@
  */
 package co.elastic.apm.opbeans.repositories;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Stats {
 
-    long products;
+    private final Long products;
 
-    long customers;
+    private final Long customers;
 
-    long orders;
+    private final Long orders;
 
-    Numbers numbers;
+    private final Numbers numbers;
 
-    public Stats(long products, long customers, long orders, Numbers numbers) {
+    public Stats(Long products, Long customers, Long orders, Numbers numbers) {
         this.products = products;
         this.customers = customers;
         this.orders = orders;
         this.numbers = numbers;
     }
 
-    public long getProducts() {
+    @JsonProperty("products")
+    public Long getProducts() {
         return products;
     }
 
-    public long getCustomers() {
+    @JsonProperty("customers")
+    public Long getCustomers() {
         return customers;
     }
 
-    public long getOrders() {
+    @JsonProperty("orders")
+    public Long getOrders() {
         return orders;
     }
 
+    @JsonProperty("numbers")
     public Numbers getNumbers() {
         return numbers;
     }
