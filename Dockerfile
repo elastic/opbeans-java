@@ -47,7 +47,7 @@ RUN export JAVA_AGENT_BUILT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.arg
 #Run application Stage
 #We only need java
 
-FROM adoptopenjdk:11-jre-hotspot
+FROM adoptopenjdk:16-jre-hotspot
 
 RUN export
 RUN apt-get -qq update \
