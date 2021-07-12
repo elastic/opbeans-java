@@ -41,7 +41,7 @@
 		<dependency>
 			<groupId>co.elastic.apm</groupId>
 			<artifactId>apm-opentracing</artifactId>
-			<version>1.3.0</version>
+			<version>1.24.0</version>
 		</dependency>
 		<dependency>
 			<groupId>co.elastic.logging</groupId>
