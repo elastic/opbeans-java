@@ -43,10 +43,7 @@ RUN mvn -q --batch-mode clean package \
 RUN export JAVA_AGENT_BUILT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive org.codehaus.mojo:exec-maven-plugin:1.3.1:exec) \
     && cp -v /usr/src/java-agent-code/elastic-apm-agent/target/elastic-apm-agent-${JAVA_AGENT_BUILT_VERSION}.jar /usr/src/java-app/elastic-apm-agent.jar
 
-
-#Run application Stage
-#We only need java
-
+#Run application Stage#We only need java
 FROM adoptopenjdk:11-jre-hotspot
 
 RUN export
@@ -55,20 +52,23 @@ RUN apt-get -qq update \
  && rm -f /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin || true
 WORKDIR /app
 COPY --from=0 /usr/src/java-app/*.jar ./
+RUN curl --location --output opentelemetry-javaagent-all.jar "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v1.4.0/opentelemetry-javaagent-all.jar"
 
 LABEL \
     org.label-schema.schema-version="1.0" \
     org.label-schema.vendor="Elastic" \
-    org.label-schema.name="opbeans-java" \
+    org.label-schema.name="opbeans-java-otel" \
     org.label-schema.version="1.23.0" \
     org.label-schema.url="https://hub.docker.com/r/opbeans/opbeans-java" \
     org.label-schema.vcs-url="https://github.com/elastic/opbeans-java" \
     org.label-schema.license="MIT"
 
-CMD java -javaagent:/app/elastic-apm-agent.jar -Dspring.profiles.active=${OPBEANS_JAVA_PROFILE:-}\
+CMD java -javaagent:/app/opentelemetry-javaagent-all.jar -Dspring.profiles.active=${OPBEANS_JAVA_PROFILE:-}\
                                         -Dserver.port=${OPBEANS_SERVER_PORT:-}\
                                         -Dserver.address=${OPBEANS_SERVER_ADDRESS:-0.0.0.0}\
                                         -Dspring.datasource.url=${DATABASE_URL:-}\
                                         -Dspring.datasource.driverClassName=${DATABASE_DRIVER:-}\
                                         -Dspring.jpa.database=${DATABASE_DIALECT:-}\
+                                        -Dotel.resource.attributes=service.name=opbeans-java-otel \
+                                        -Dotel.exporter.otlp.endpoint=${ELASTIC_APM_SERVER_URL:-http://localhost:8200}\
                                         -jar /app/app.jar
