@@ -1,7 +1,11 @@
 version: "2.1"
 services:
   opbeans-java:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        OTEL_JAVA_AGENT_VERSION: v1.10.1
     image: opbeans/opbeans-java:latest
     container_name: opbeans-java
     ports:
