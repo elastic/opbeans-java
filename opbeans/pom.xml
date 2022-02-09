@@ -7,7 +7,6 @@
 	<groupId>co.elastic.apm</groupId>
 	<artifactId>opbeans</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
 
 	<name>opbeans</name>
 	<description>This is an implementation of the Opbeans Demo app in Java</description>
