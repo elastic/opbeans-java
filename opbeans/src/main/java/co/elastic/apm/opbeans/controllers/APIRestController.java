@@ -32,11 +32,11 @@ import co.elastic.apm.opbeans.repositories.ProductList;
 import co.elastic.apm.opbeans.repositories.ProductRepository;
 import co.elastic.apm.opbeans.repositories.Stats;
 import co.elastic.apm.opbeans.repositories.TopProduct;
-import co.elastic.apm.opentracing.ElasticApmTracer;
 import com.fasterxml.jackson.databind.JsonNode;
-import io.opentracing.Scope;
-import io.opentracing.Span;
-import io.opentracing.Tracer;
+import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.context.Scope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,44 +59,46 @@ import java.util.function.Supplier;
 
 @RestController
 @RequestMapping("/api")
-class APIRestController{
+class APIRestController {
 
     private static final Logger logger = LoggerFactory.getLogger(APIRestController.class);
     private static final int TOP_SALES_SIZE = 3;
 
+    private static final Tracer tracer = GlobalOpenTelemetry.get().getTracer("custom");
+
     private final ProductRepository productRepository;
     private final CustomerRepository customerRepository;
     private final OrderRepository orderRepository;
-    private final Tracer tracer;
 
     @Autowired
     APIRestController(ProductRepository productRepository, CustomerRepository customerRepository, OrderRepository orderRepository) {
         this.productRepository = productRepository;
         this.customerRepository = customerRepository;
         this.orderRepository = orderRepository;
-        this.tracer = new ElasticApmTracer();
     }
 
     @GetMapping(value = "/products")
     @CaptureSpan("Annotation products span")
     Collection<ProductList> products() {
-        ElasticApm.currentSpan().addTag("foo", "bar");
+        ElasticApm.currentSpan().setLabel("foo", "bar");
         return productRepository.findAllList();
     }
 
     @GetMapping("/products/{productId}")
     ProductDetail product(@PathVariable long productId) {
-        Optional<ProductDetail> result = Optional.empty();
-        final Span span = tracer.buildSpan("OpenTracing product span")
-                .withTag("productId", Long.toString(productId))
-                .start();
-        try (Scope scope = tracer.scopeManager().activate(span, false)) {
-            result =  productRepository.getOneDetail(productId);
+        Optional<ProductDetail> result;
+
+        Span span = tracer.spanBuilder("OpenTelemetry product span")
+                .setAttribute("product.id", productId)
+                .startSpan();
+
+        try (Scope scope = span.makeCurrent()) {
+            result = productRepository.getOneDetail(productId);
         } finally {
-            span.finish();
+            span.end();
         }
 
-        // Spring MVC uses exceptions to return a 404, thus we keep that out of the OTracing span to avoid
+        // Spring MVC uses exceptions to return a 404, thus we keep that out of the OTel span to avoid
         // any confusion as it's not an actual server error but a way to return a client error.
         return result.orElseThrow(notFound());
     }
