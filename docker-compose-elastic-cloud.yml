@@ -6,6 +6,7 @@ services:
       dockerfile: Dockerfile
       args:
         OTEL_JAVA_AGENT_VERSION: v1.10.1
+        APM_AGENT_TYPE: ${APM_AGENT_TYPE:-elasticapm}
     image: opbeans/opbeans-java:latest
     container_name: opbeans-java
     ports:
