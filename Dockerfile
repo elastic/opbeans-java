@@ -3,6 +3,7 @@ ARG APM_AGENT_TYPE=elasticapm
 
 #Build application stage
 #We need maven.
+
 FROM maven:3.8.4-jdk-11
 
 ARG JAVA_AGENT_BRANCH=master
@@ -30,25 +31,6 @@ RUN mvn -X --batch-mode package \
   -Dmaven.gitcommitid.skip=true
 RUN cp -v /usr/src/java-code/opbeans/target/*.jar /usr/src/java-app/app.jar
 
-#build the elastic APM agent
-WORKDIR /usr/src/java-agent-code
-RUN curl -L https://github.com/$JAVA_AGENT_REPO/archive/$JAVA_AGENT_BRANCH.tar.gz | tar --strip-components=1 -xz
-RUN mvn -q --batch-mode clean package \
-  -Dmaven.repo.local=.m2 \
-  --no-transfer-progress \
-  -Dmaven.wagon.http.retryHandler.count=3 \
-  -Dhttps.protocols=TLSv1.2 \
-  -Dhttp.keepAlive=false \
-  -Dmaven.javadoc.skip=true \
-  -DskipTests=true \
-  -Dmaven.gitcommitid.skip=true
-
-RUN export JAVA_AGENT_BUILT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive org.codehaus.mojo:exec-maven-plugin:1.3.1:exec) \
-    && cp -v /usr/src/java-agent-code/elastic-apm-agent/target/elastic-apm-agent-${JAVA_AGENT_BUILT_VERSION}.jar /usr/src/java-app/elastic-apm-agent.jar
-
-#Download the opentelemetry agent
-RUN curl -L https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/$OTEL_JAVA_AGENT_VERSION/opentelemetry-javaagent.jar --output /usr/src/java-app/opentelemetry-javaagent.jar
-
 #Run application Stage
 #We only need java
 FROM adoptopenjdk:14-jre-hotspot AS base
@@ -61,11 +43,16 @@ RUN apt-get -qq update \
 WORKDIR /app
 COPY --from=0 /usr/src/java-app/*.jar ./
 
+# Copy Elastic agent from docker image
+# updated by .ci/bump-version.sh
+COPY --from=docker.elastic.co/observability/apm-agent-java:1.29.0 /usr/agent/elastic-apm-agent.jar /app/elastic-apm-agent.jar
+
+# updated by .ci/bump-version.sh
 LABEL \
     org.label-schema.schema-version="1.0" \
     org.label-schema.vendor="Elastic" \
     org.label-schema.name="opbeans-java" \
-    org.label-schema.version="1.28.4" \
+    org.label-schema.version="1.29.0" \
     org.label-schema.url="https://hub.docker.com/r/opbeans/opbeans-java" \
     org.label-schema.vcs-url="https://github.com/elastic/opbeans-java" \
     org.label-schema.license="MIT"
