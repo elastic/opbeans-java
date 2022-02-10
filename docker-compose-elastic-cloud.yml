@@ -1,12 +1,7 @@
 version: "2.1"
 services:
   opbeans-java:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        OTEL_JAVA_AGENT_VERSION: v1.10.1
-        APM_AGENT_TYPE: ${APM_AGENT_TYPE:-elasticapm}
+    build: .
     image: opbeans/opbeans-java:latest
     container_name: opbeans-java
     ports:
@@ -29,6 +24,7 @@ services:
       - OTEL_METRICS_EXPORTER=otlp
       - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT:-http://apm-server:8200}
       - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+      - APM_AGENT_TYPE=${APM_AGENT_TYPE:-elasticapm}
     depends_on:
       apm-server:
         condition: service_healthy
