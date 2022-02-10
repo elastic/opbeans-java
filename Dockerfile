@@ -26,7 +26,7 @@ RUN cp -v /usr/src/java-code/opbeans/target/*.jar /usr/src/java-app/app.jar
 
 #Run application Stage
 #We only need java
-FROM adoptopenjdk:14-jre-hotspot AS base
+FROM adoptopenjdk:16-jre-hotspot AS base
 
 RUN export
 RUN apt-get -qq update \
