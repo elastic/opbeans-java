@@ -25,11 +25,6 @@ RUN mvn -q --batch-mode package \
   -Dmaven.gitcommitid.skip=true
 RUN cp -v /usr/src/java-code/opbeans/target/*.jar /usr/src/java-app/app.jar
 
-# Copy Elastic agent from docker image
-# updated by .ci/bump-version.sh
-WORKDIR /app
-COPY --from=docker.elastic.co/observability/apm-agent-java:1.29.0 /usr/agent/elastic-apm-agent.jar elastic-apm-agent.jar
-
 #Run application Stage
 #We only need java
 
@@ -41,6 +36,10 @@ RUN apt-get -qq update \
  && rm -f /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin || true
 WORKDIR /app
 COPY --from=0 /usr/src/java-app/*.jar ./
+
+# Copy Elastic agent from docker image
+# updated by .ci/bump-version.sh
+COPY --from=docker.elastic.co/observability/apm-agent-java:1.29.0 /usr/agent/elastic-apm-agent.jar /app/elastic-apm-agent.jar
 
 # updated by .ci/bump-version.sh
 LABEL \
