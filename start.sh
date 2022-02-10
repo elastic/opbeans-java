@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 set -euo pipefail
 
@@ -32,4 +32,3 @@ java \
     ${JAVA_AGENT} \
     ${APP_OPTS} \
     -jar ./app.jar
-
