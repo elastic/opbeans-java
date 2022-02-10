@@ -27,22 +27,11 @@ RUN mvn -q --batch-mode package \
   -Dmaven.gitcommitid.skip=true
 RUN cp -v /usr/src/java-code/opbeans/target/*.jar /usr/src/java-app/app.jar
 
-#build the agent
-WORKDIR /usr/src/java-agent-code
-RUN curl -L https://github.com/$JAVA_AGENT_REPO/archive/$JAVA_AGENT_BRANCH.tar.gz | tar --strip-components=1 -xz
-RUN mvn -q --batch-mode clean package \
-  -Dmaven.repo.local=.m2 \
-  --no-transfer-progress \
-  -Dmaven.wagon.http.retryHandler.count=3 \
-  -Dhttps.protocols=TLSv1.2 \
-  -Dhttp.keepAlive=false \
-  -Dmaven.javadoc.skip=true \
-  -DskipTests=true \
-  -Dmaven.gitcommitid.skip=true
-
-RUN export JAVA_AGENT_BUILT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive org.codehaus.mojo:exec-maven-plugin:1.3.1:exec) \
-    && cp -v /usr/src/java-agent-code/elastic-apm-agent/target/elastic-apm-agent-${JAVA_AGENT_BUILT_VERSION}.jar /usr/src/java-app/elastic-apm-agent.jar
-
+# Copy Elastic agent from docker image
+WORKDIR /app
+COPY --from=docker.elastic.co/observability/apm-agent-java:1.28.4 \
+    /usr/agent/elastic-apm-agent.jar \
+    elastic-apm-agent.jar
 
 #Run application Stage
 #We only need java
