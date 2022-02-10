@@ -3,8 +3,6 @@
 #Build application stage
 #We need maven.
 FROM maven:3.6.3-jdk-14
-ARG JAVA_AGENT_BRANCH=master
-ARG JAVA_AGENT_REPO=elastic/apm-agent-java
 
 WORKDIR /usr/src/java-app
 
@@ -28,6 +26,7 @@ RUN mvn -q --batch-mode package \
 RUN cp -v /usr/src/java-code/opbeans/target/*.jar /usr/src/java-app/app.jar
 
 # Copy Elastic agent from docker image
+# updated by .ci/bump-version.sh
 WORKDIR /app
 COPY --from=docker.elastic.co/observability/apm-agent-java:1.29.0 /usr/agent/elastic-apm-agent.jar elastic-apm-agent.jar
 
@@ -43,11 +42,12 @@ RUN apt-get -qq update \
 WORKDIR /app
 COPY --from=0 /usr/src/java-app/*.jar ./
 
+# updated by .ci/bump-version.sh
 LABEL \
     org.label-schema.schema-version="1.0" \
     org.label-schema.vendor="Elastic" \
     org.label-schema.name="opbeans-java" \
-    org.label-schema.version="1.28.4" \
+    org.label-schema.version="1.29.0" \
     org.label-schema.url="https://hub.docker.com/r/opbeans/opbeans-java" \
     org.label-schema.vcs-url="https://github.com/elastic/opbeans-java" \
     org.label-schema.license="MIT"
