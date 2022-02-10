@@ -9,6 +9,7 @@ cd opbeans
 
 ## Bump agent version in the Dockerfile
 sed -ibck "s#\(org.label-schema.version=\)\(\".*\"\)\(.*\)#\1\"${AGENT_VERSION}\"\3#g" ../Dockerfile
+sed -ibck "s#\(--from=docker.elastic.co/observability/apm-agent-java:\).*\( .*\)#\1${AGENT_VERSION}\2#g" ../Dockerfile
 
 # Commit changes
 git add pom.xml ../Dockerfile

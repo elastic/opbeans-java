@@ -29,9 +29,7 @@ RUN cp -v /usr/src/java-code/opbeans/target/*.jar /usr/src/java-app/app.jar
 
 # Copy Elastic agent from docker image
 WORKDIR /app
-COPY --from=docker.elastic.co/observability/apm-agent-java:1.28.4 \
-    /usr/agent/elastic-apm-agent.jar \
-    elastic-apm-agent.jar
+COPY --from=docker.elastic.co/observability/apm-agent-java:1.29.0 /usr/agent/elastic-apm-agent.jar elastic-apm-agent.jar
 
 #Run application Stage
 #We only need java
