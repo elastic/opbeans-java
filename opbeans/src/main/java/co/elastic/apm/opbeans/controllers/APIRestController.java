@@ -64,7 +64,7 @@ class APIRestController {
     private static final Logger logger = LoggerFactory.getLogger(APIRestController.class);
     private static final int TOP_SALES_SIZE = 3;
 
-    private static final Tracer tracer = GlobalOpenTelemetry.get().getTracer("custom");
+    private static final Tracer tracer = GlobalOpenTelemetry.get().getTracer("co.elastic.apm:opbeans");
 
     private final ProductRepository productRepository;
     private final CustomerRepository customerRepository;
