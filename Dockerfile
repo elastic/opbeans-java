@@ -20,7 +20,6 @@ RUN mvn -q --batch-mode package \
   -Dhttps.protocols=TLSv1.2 \
   -Dhttp.keepAlive=false \
   -Dmaven.javadoc.skip=true \
-  -DskipTests=true \
   -Dmaven.gitcommitid.skip=true
 RUN cp -v /usr/src/java-code/opbeans/target/*.jar /usr/src/java-app/app.jar
 
