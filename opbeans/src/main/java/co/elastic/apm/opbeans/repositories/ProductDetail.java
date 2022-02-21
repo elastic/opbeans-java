@@ -41,7 +41,7 @@ public interface ProductDetail {
 	@JsonProperty("selling_price")
 	double getSellingPrice();
 
-	@JsonProperty("cost")
+	@JsonProperty("stock")
 	Long getStock();
 
 	@JsonProperty("type_id")
