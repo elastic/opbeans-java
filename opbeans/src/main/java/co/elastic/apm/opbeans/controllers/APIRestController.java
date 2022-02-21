@@ -127,26 +127,57 @@ class APIRestController {
 
     @GetMapping("/orders")
     Collection<OrderList> orders() {
-        return orderRepository.findAllList();
+        Span span = tracer.spanBuilder("OpenTelemetry orders")
+                .startSpan();
+        try (Scope scope = span.makeCurrent()) {
+            return orderRepository.findAllList();
+        } finally {
+            span.end();
+        }
     }
 
     @GetMapping("/orders/{orderId}")
     OrderDetail order(@PathVariable long orderId) {
-        return orderRepository.getOneDetail(orderId)
-                .orElseThrow(notFound());
+        Span span = tracer.spanBuilder("OpenTelemetry get order")
+                .setAttribute("order.id", orderId)
+                .startSpan();
+        try (Scope scope = span.makeCurrent()) {
+            return orderRepository.getOneDetail(orderId)
+                    .orElseThrow(notFound());
+        } finally {
+            span.end();
+        }
+
     }
 
     @PostMapping("/orders/")
     OrderDetail createOrder(@RequestBody JsonNode orderJson) {
-        Customer customer = customerRepository.findById(orderJson.get("customer_id").asLong())
-                .orElseThrow(notFound());
+        Span span = tracer.spanBuilder("OpenTelemetry create order")
+                .startSpan();
+        try (Scope scope = span.makeCurrent()) {
+            Customer customer = customerRepository.findById(orderJson.get("customer_id").asLong())
+                    .orElseThrow(notFound());
 
-        Order order = new Order();
-        order.setCreatedAt(Date.from(Instant.now()));
-        order.setCustomer(customer);
+            Order savedOrder = saveOrder(customer);
+            return order(savedOrder.getId());
+        } finally {
+            span.end();
+        }
+    }
 
-        Order savedOrder = orderRepository.save(order);
-        return order(savedOrder.getId());
+    private Order saveOrder(Customer customer) {
+        Span span = tracer.spanBuilder("OpenTelemetry save order")
+                .startSpan();
+        try (Scope scope = span.makeCurrent()) {
+            Order order = new Order();
+            order.setCreatedAt(Date.from(Instant.now()));
+            order.setCustomer(customer);
+
+            return orderRepository.save(order);
+        } finally {
+            span.end();
+        }
+
     }
 
     @GetMapping("/stats")
