@@ -165,6 +165,9 @@ class APIRestController {
 
             Order savedOrder = saveOrder(customer);
             return order(savedOrder.getId());
+        } catch (Exception e) {
+            span.recordException(e);
+            throw e;
         } finally {
             span.end();
         }
