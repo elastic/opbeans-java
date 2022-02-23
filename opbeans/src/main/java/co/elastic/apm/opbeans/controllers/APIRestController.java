@@ -35,6 +35,7 @@ import co.elastic.apm.opbeans.repositories.TopProduct;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Scope;
 import org.slf4j.Logger;
@@ -166,6 +167,7 @@ class APIRestController {
             Order savedOrder = saveOrder(customer);
             return order(savedOrder.getId());
         } catch (Exception e) {
+            span.setStatus(StatusCode.ERROR);
             span.recordException(e);
             throw e;
         } finally {
