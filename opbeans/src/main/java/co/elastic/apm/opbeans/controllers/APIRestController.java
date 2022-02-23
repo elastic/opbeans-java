@@ -152,10 +152,15 @@ class APIRestController {
 
     @PostMapping("/orders/")
     OrderDetail createOrder(@RequestBody JsonNode orderJson) {
+        long customerId = orderJson.get("customer_id").asLong();
         Span span = tracer.spanBuilder("OpenTelemetry create order")
+                .setAttribute("customer.id", customerId)
                 .startSpan();
+
         try (Scope scope = span.makeCurrent()) {
-            Customer customer = customerRepository.findById(orderJson.get("customer_id").asLong())
+            // The "not found" error will be captured by the active span
+            // While it is an error on the client side, we use it to showcase implicit error capture.
+            Customer customer = customerRepository.findById(customerId)
                     .orElseThrow(notFound());
 
             Order savedOrder = saveOrder(customer);
