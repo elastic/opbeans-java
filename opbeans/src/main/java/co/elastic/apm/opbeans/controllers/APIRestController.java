@@ -35,6 +35,7 @@ import co.elastic.apm.opbeans.repositories.TopProduct;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Scope;
 import org.slf4j.Logger;
@@ -64,7 +65,7 @@ class APIRestController {
     private static final Logger logger = LoggerFactory.getLogger(APIRestController.class);
     private static final int TOP_SALES_SIZE = 3;
 
-    private static final Tracer tracer = GlobalOpenTelemetry.get().getTracer("custom");
+    private static final Tracer tracer = GlobalOpenTelemetry.get().getTracer("co.elastic.apm:opbeans");
 
     private final ProductRepository productRepository;
     private final CustomerRepository customerRepository;
@@ -127,26 +128,66 @@ class APIRestController {
 
     @GetMapping("/orders")
     Collection<OrderList> orders() {
-        return orderRepository.findAllList();
+        Span span = tracer.spanBuilder("OpenTelemetry orders")
+                .startSpan();
+        try (Scope scope = span.makeCurrent()) {
+            return orderRepository.findAllList();
+        } finally {
+            span.end();
+        }
     }
 
     @GetMapping("/orders/{orderId}")
     OrderDetail order(@PathVariable long orderId) {
-        return orderRepository.getOneDetail(orderId)
-                .orElseThrow(notFound());
+        Span span = tracer.spanBuilder("OpenTelemetry get order")
+                .setAttribute("order.id", orderId)
+                .startSpan();
+        try (Scope scope = span.makeCurrent()) {
+            return orderRepository.getOneDetail(orderId)
+                    .orElseThrow(notFound());
+        } finally {
+            span.end();
+        }
+
     }
 
     @PostMapping("/orders/")
     OrderDetail createOrder(@RequestBody JsonNode orderJson) {
-        Customer customer = customerRepository.findById(orderJson.get("customer_id").asLong())
-                .orElseThrow(notFound());
+        long customerId = orderJson.get("customer_id").asLong();
+        Span span = tracer.spanBuilder("OpenTelemetry create order")
+                .setAttribute("customer.id", customerId)
+                .startSpan();
 
-        Order order = new Order();
-        order.setCreatedAt(Date.from(Instant.now()));
-        order.setCustomer(customer);
+        try (Scope scope = span.makeCurrent()) {
+            // The "not found" error will be captured by the active span
+            // While it is an error on the client side, we use it to showcase implicit error capture.
+            Customer customer = customerRepository.findById(customerId)
+                    .orElseThrow(notFound());
 
-        Order savedOrder = orderRepository.save(order);
-        return order(savedOrder.getId());
+            Order savedOrder = saveOrder(customer);
+            return order(savedOrder.getId());
+        } catch (Exception e) {
+            span.setStatus(StatusCode.ERROR);
+            span.recordException(e);
+            throw e;
+        } finally {
+            span.end();
+        }
+    }
+
+    private Order saveOrder(Customer customer) {
+        Span span = tracer.spanBuilder("OpenTelemetry save order")
+                .startSpan();
+        try (Scope scope = span.makeCurrent()) {
+            Order order = new Order();
+            order.setCreatedAt(Date.from(Instant.now()));
+            order.setCustomer(customer);
+
+            return orderRepository.save(order);
+        } finally {
+            span.end();
+        }
+
     }
 
     @GetMapping("/stats")
