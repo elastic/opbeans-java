@@ -41,6 +41,24 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+			<dependency>
+				<groupId>io.opentelemetry</groupId>
+				<artifactId>opentelemetry-bom-alpha</artifactId>
+				<version>1.11.0-alpha</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<!-- required to override the default inherited from opentelemetry-exporter-otlp -->
+			<dependency>
+				<groupId>org.jetbrains.kotlin</groupId>
+				<artifactId>kotlin-stdlib</artifactId>
+				<version>1.4.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jetbrains.kotlin</groupId>
+				<artifactId>kotlin-stdlib-common</artifactId>
+				<version>1.4.0</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -65,19 +83,11 @@
 		<dependency>
 			<groupId>io.opentelemetry</groupId>
 			<artifactId>opentelemetry-sdk-extension-autoconfigure</artifactId>
-			<version>1.11.0-alpha</version>
 		</dependency>
 		<dependency>
 			<groupId>io.opentelemetry</groupId>
 			<artifactId>opentelemetry-exporter-otlp</artifactId>
 		</dependency>
-		<!-- required to override the defaut inherited from opentelemetry-exporter-otlp -->
-		<dependency>
-			<groupId>org.jetbrains.kotlin</groupId>
-			<artifactId>kotlin-stdlib</artifactId>
-			<version>1.3.70</version>
-		</dependency>
-
 		<dependency>
 			<groupId>co.elastic.logging</groupId>
 			<artifactId>logback-ecs-encoder</artifactId>
