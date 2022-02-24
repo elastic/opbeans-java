@@ -12,15 +12,16 @@ APP_OPTS="${APP_OPTS} -Dspring.datasource.url=${DATABASE_URL:-}"
 APP_OPTS="${APP_OPTS} -Dspring.datasource.driverClassName=${DATABASE_DRIVER:-}"
 APP_OPTS="${APP_OPTS} -Dspring.jpa.database=${DATABASE_DIALECT:-}"
 
-case "${APM_AGENT_TYPE}" in
+case "${APM_AGENT_TYPE:-none}" in
     "opentelemetry")
-        echo "opentelemetry"
         JAVA_AGENT="-javaagent:/app/opentelemetry-javaagent.jar"
         APP_OPTS="${APP_OPTS} -Dotel.instrumentation.runtime-metrics.enabled=true"
         ;;
     "elasticapm")
-        echo "elasticapm"
         JAVA_AGENT="-javaagent:/app/elastic-apm-agent.jar"
+        ;;
+    "none")
+        JAVA_AGENT=""
         ;;
     *)
         echo "unknown agent type $APM_AGENT_TYPE"
