@@ -3,7 +3,8 @@
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="co.elastic.logging.logback.EcsEncoder">
-            <serviceName>opbeans-java</serviceName>
+            <!-- Allows overriding service name through standard APM configuration -->
+            <serviceName>${ELASTIC_APM_SERVICE_NAME:-opbeans-java}</serviceName>
             <!-- uncomment this to have almost-human readable stack traces in log output -->
             <!-- <stackTraceAsArray>true</stackTraceAsArray> -->
         </encoder>
