@@ -5,6 +5,10 @@ set -euo pipefail
 JAVA_AGENT=''
 
 APP_OPTS=""
+if [ "" != "${DEBUG_ADDRESS:-}" ]; then
+    APP_OPTS="-agentlib:jdwp=transport=dt_socket,server=n,address=${DEBUG_ADDRESS},suspend=y"
+fi
+
 APP_OPTS="${APP_OPTS} -Dspring.profiles.active=${OPBEANS_JAVA_PROFILE:-}"
 APP_OPTS="${APP_OPTS} -Dserver.port=${OPBEANS_SERVER_PORT:-}"
 APP_OPTS="${APP_OPTS} -Dserver.address=${OPBEANS_SERVER_ADDRESS:-0.0.0.0}"
