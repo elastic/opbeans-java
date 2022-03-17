@@ -65,6 +65,7 @@ navigating to the path `/is-it-coffee-time`.
 The Opbeans Java can use the APM Agent Java or the OpenTelemetry java implementation
 in order to choose one of other you have to set the environment variable APM_AGENT_TYPE
 to `elasticapm` when you use the APM Agent Java and `opentelemetry` to use OpenTelemetry java implementation.
+Finally, there is also the none value that will make Opbeans run without any instrumentation agent.
 
 see the [docker-compose](./docker-compose.yml) file for more details about the environment variables.
 
