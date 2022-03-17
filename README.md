@@ -66,5 +66,5 @@ The Opbeans Java can use the APM Agent Java or the OpenTelemetry java implementa
 in order to choose one of other you have to set the environment variable APM_AGENT_TYPE
 to `elasticapm` when you use the APM Agent Java and `opentelemetry` to use OpenTelemetry java implementation.
 
-see the [docker-compose](./docker-compose.yml) file for more details about the nevironment variables.
+see the [docker-compose](./docker-compose.yml) file for more details about the environment variables.
 
