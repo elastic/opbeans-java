@@ -59,3 +59,14 @@ Another possible way is to create a different property file like application-cus
 
 The application has a built-in bug that you can trigger by
 navigating to the path `/is-it-coffee-time`.
+
+## Agent mode (elasticapm/opentelemetry)
+
+The Opbeans Java can use the APM Agent Java or the OpenTelemetry java implementation
+in order to choose one of other you have to set the environment variable APM_AGENT_TYPE
+to `elasticapm` when you use the APM Agent Java and `opentelemetry` to use OpenTelemetry java implementation.
+Finally, there is also the `none` value that will make Opbeans run without any instrumentation agent.
+
+When OpenTelemetry agent is enabled, the OpenTelemetry environment variables should be properly set to allow the application to send spans created through manual instrumentation.
+see the [docker-compose](./docker-compose.yml) file for more details about the environment variables, and [OpenTelemetry SDK Autoconfigure](https://github.com/open-telemetry/opentelemetry-java/blob/main/sdk-extensions/autoconfigure/README.md) for more details.
+
