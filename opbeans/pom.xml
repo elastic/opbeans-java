@@ -68,7 +68,7 @@
 		<dependency>
 			<groupId>co.elastic.apm</groupId>
 			<artifactId>apm-agent-api</artifactId>
-			<version>1.29.0</version>
+			<version>1.30.0</version>
 		</dependency>
 
 		<!-- OpenTelemetry API + SDK -->
