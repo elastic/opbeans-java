@@ -4,7 +4,7 @@ java -version
 
 cd opbeans
 
-#./mvnw clean package
+./mvnw clean package
 
 export ELASTIC_APM_SERVICE_NAME=opbeans-debug
 export ELASTIC_APM_SERVER_URL=http://localhost:8200

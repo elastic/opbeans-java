@@ -43,6 +43,7 @@ public class OpbeansApplication {
 
                 Span span = tracer.spanBuilder("fake HTTP transaction")
                         .startSpan()
+                        .setAttribute("http.url", "http://localhost:8080/")
                         .setAttribute("http.method", "GET")
                         .setAttribute("http.status_code", 200);
 
