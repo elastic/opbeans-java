@@ -21,6 +21,8 @@ package co.elastic.apm.opbeans;
 
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.SpanKind;
+import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.api.trace.Tracer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -42,6 +44,7 @@ public class OpbeansApplication {
                 Tracer tracer = GlobalOpenTelemetry.get().getTracer("co.elastic.apm:opbeans");
 
                 Span span = tracer.spanBuilder("fake HTTP transaction")
+                        .setSpanKind(SpanKind.SERVER)
                         .startSpan()
                         .setAttribute("http.url", "http://localhost:8080/")
                         .setAttribute("http.method", "GET")
@@ -53,7 +56,8 @@ public class OpbeansApplication {
                     // ignored
                 }
 
-                span.end();
+                span.setStatus(StatusCode.OK)
+                     .end();
 
             }
         };
