@@ -1,28 +1,31 @@
----
 name: build
 
 on:
   push:
-    branches:
-    - main
+    branches: [ "main" ]
   pull_request:
-    branches:
-    - main
+    branches: [ "main" ]
 
 permissions:
   contents: read
 
 jobs:
   build:
+
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
-      - name: build
-        run: make build
-      - name: test
-        run: make test
-      - uses: actions/upload-artifact@v3
-        if: success() || failure()
-        with:
-          name: test-results
-          path: target/*.xml
+    - uses: actions/checkout@v3
+
+    - name: Run build
+      run: make build
+
+    - name: Run test
+      run: make test
+
+    - name: Store test results
+      uses: actions/upload-artifact@v3
+      if: success() || failure()
+      with:
+        name: test-results
+        path: target/*.xml
