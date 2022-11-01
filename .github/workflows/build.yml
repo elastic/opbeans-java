@@ -23,9 +23,3 @@ jobs:
     - name: Run test
       run: make test
 
-    - name: Store test results
-      uses: actions/upload-artifact@v3
-      if: success() || failure()
-      with:
-        name: test-results
-        path: target/*.xml
