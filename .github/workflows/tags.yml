@@ -1,0 +1,30 @@
+name: test
+
+on:
+  create:
+    tags: [ "v*" ]
+
+permissions:
+  contents: read
+
+jobs:
+
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - uses: elastic/apm-pipeline-library/.github/actions/docker-login@gh_actions
+      with:
+        registry: docker.io
+        secret: secret/apm-team/ci/elastic-observability-dockerhub
+        url: ${{ secrets.VAULT_ADDR }}
+        roleId: ${{ secrets.VAULT_ROLE_ID }}
+        secretId: ${{ secrets.VAULT_SECRET_ID }}
+
+    - name: Set env
+      run: echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+
+    - name: Run publish
+      run: make publish
