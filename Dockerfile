@@ -2,7 +2,7 @@
 
 #Build application stage
 #We need maven.
-FROM maven:3.8.4-jdk-11
+FROM maven:3.8.6-jdk-11
 WORKDIR /usr/src/java-app
 
 #build the application
