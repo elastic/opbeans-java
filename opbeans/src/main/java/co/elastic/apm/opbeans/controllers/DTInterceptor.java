@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Random;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +15,7 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import org.springframework.web.servlet.HandlerInterceptor;
 
 /**
  * Interceptor that simulates DT call by delegating some of the API call to other services, obtained 
@@ -24,7 +24,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
  * If the probability is 0 or the list of services is empty, the redirection will be disabled
  *
  */
-public class DTInterceptor extends HandlerInterceptorAdapter {
+public class DTInterceptor implements HandlerInterceptor {
 
     private static Logger log = LoggerFactory.getLogger(DTInterceptor.class);
     
@@ -95,8 +95,8 @@ public class DTInterceptor extends HandlerInterceptorAdapter {
 
         @Override
         public boolean hasError(ClientHttpResponse httpResponse) throws IOException {
-            return (httpResponse.getStatusCode().series() == HttpStatus.Series.CLIENT_ERROR
-                    || httpResponse.getStatusCode().series() == HttpStatus.Series.SERVER_ERROR);
+            return (httpResponse.getStatusCode().is4xxClientError()
+                    || httpResponse.getStatusCode().is5xxServerError());
         }
 
         @Override
