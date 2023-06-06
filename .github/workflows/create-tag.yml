@@ -23,4 +23,6 @@ jobs:
           gh release create "${APM_AGENT_JAVA_VERSION}" \
             --title="${APM_AGENT_JAVA_VERSION}" \
             --generate-notes
+        env:
+          GH_TOKEN: ${{ github.token }}
       
