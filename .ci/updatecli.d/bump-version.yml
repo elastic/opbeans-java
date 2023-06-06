@@ -1,0 +1,69 @@
+---
+## Workflow to periodically check if there is an available newer APM agent version, e.g.
+## "1.2.3". If so, then update to it.
+name: Bump apm-agent-java to latest version
+
+title: Bump apm-agent java to latest version
+
+scms:
+  githubConfig:
+    kind: github
+    spec:
+      user: '{{ requiredEnv "GIT_USER" }}'
+      email: '{{ requiredEnv "GIT_EMAIL" }}'
+      owner: elastic
+      repository: opbeans-java
+      token: '{{ requiredEnv "GITHUB_TOKEN" }}'
+      username: '{{ requiredEnv "GIT_USER" }}'
+      branch: main
+
+actions:
+  opbeans-python:
+    kind: github/pullrequest
+    scmid: githubConfig
+    spec:
+      automerge: false
+      labels:
+        - dependencies
+
+sources:
+  elastic-apm-agent-java:
+    kind: githubrelease
+    spec:
+      owner: elastic
+      repository: apm-agent-java
+      token: '{{ requiredEnv "GITHUB_TOKEN" }}'
+      username: '{{ requiredEnv "GIT_USER" }}'
+      versionfilter:
+        kind: semver
+    transformers:
+      - trimprefix: "v"
+
+targets:
+  mvn:
+    name: Update maven package version
+    sourceid: elastic-apm-agent-java
+    scmid: githubConfig
+    kind: shell
+    spec:
+      command: .ci/bump-version.sh
+  dockerfile_schema_version:
+    name: Set org.label-schema.version in Dockerfile
+    sourceid: elastic-apm-agent-java
+    scmid: githubConfig
+    kind: file
+    spec:
+      file: Dockerfile
+      matchpattern: 'org\.label-schema\.version="(\d+.\d+.\d+)"'
+      replacepattern: org.label-schema.version="{{ source `elastic-apm-agent-java` }}"
+  dockerfile_agent_version:
+    name: Set apm-agent version in Dockerfile
+    sourceid: elastic-apm-agent-java
+    scmid: githubConfig
+    kind: file
+    dependson:
+      - mvn
+    spec:
+      file: Dockerfile
+      matchpattern: 'docker\.elastic\.co\/observability\/apm-agent-java\:(\d+\.\d+\.\d+)'
+      replacepattern: "docker.elastic.co/observability/apm-agent-java:{{ source `elastic-apm-agent-java` }}"

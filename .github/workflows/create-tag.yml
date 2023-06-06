@@ -1,0 +1,29 @@
+---
+# Takes the version of apm-agent-java in the Dockerfile and creates a tag
+# if the tag does not exist yet.
+name: create-tag
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - Dockerfile
+
+permissions:
+  contents: write
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # also fetch tags
+      - run: |
+          APM_AGENT_JAVA_VERSION="v$(cat Dockerfile | grep "apm-agent-java" | awk '/apm-agent-java:/{ print $2 }' | awk -F: '{ print $2 }')"
+          # if the tag does not exist
+          if [[ ! $(git tag -l "${APM_AGENT_JAVA_VERSION}") ]]; then
+            git tag ${APM_AGENT_JAVA_VERSION}
+            git push origin "refs/tags/${APM_AGENT_JAVA_VERSION}"
+          fi
