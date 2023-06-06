@@ -1,4 +1,5 @@
 ---
+# yaml-language-server: $schema=https://www.updatecli.io/schema/latest/config.json
 ## Workflow to periodically check if there is an available newer APM agent version, e.g.
 ## "1.2.3". If so, then update to it.
 name: Bump apm-agent-java to latest version
