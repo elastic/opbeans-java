@@ -18,12 +18,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0 # also fetch tags
-      - run: |
+      - name: Create release if not exists
+        continue-on-error: true
+        run: |
           APM_AGENT_JAVA_VERSION="v$(cat .version)"
-          # if the tag does not exist
-          if [[ ! $(git tag -l "${APM_AGENT_JAVA_VERSION}") ]]; then
-            git tag ${APM_AGENT_JAVA_VERSION}
-            git push origin "refs/tags/${APM_AGENT_JAVA_VERSION}"
-          fi
+          gh release create "${APM_AGENT_JAVA_VERSION}" \
+            --title="${APM_AGENT_JAVA_VERSION}" \
+            --generate-notes \
+            --verify-tag
+      
