@@ -41,6 +41,14 @@ sources:
       - trimprefix: "v"
 
 targets:
+  version:
+    name: Update .version file
+    sourceid: elastic-apm-agent-java
+    scmid: githubConfig
+    kind: file
+    spec:
+      file: .version
+      forcecreate: true
   mvn:
     name: Update maven package version
     sourceid: elastic-apm-agent-java
