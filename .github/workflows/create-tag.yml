@@ -19,7 +19,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Create release if not exists
-        continue-on-error: true
         run: |
           APM_AGENT_JAVA_VERSION="v$(cat .version)"
           gh release create "${APM_AGENT_JAVA_VERSION}" \
