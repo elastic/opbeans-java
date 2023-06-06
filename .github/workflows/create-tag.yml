@@ -23,6 +23,5 @@ jobs:
           APM_AGENT_JAVA_VERSION="v$(cat .version)"
           gh release create "${APM_AGENT_JAVA_VERSION}" \
             --title="${APM_AGENT_JAVA_VERSION}" \
-            --generate-notes \
-            --verify-tag
+            --generate-notes
       
