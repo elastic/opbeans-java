@@ -18,7 +18,7 @@ scms:
       branch: main
 
 actions:
-  opbeans-python:
+  opbeans-java:
     kind: github/pullrequest
     scmid: githubConfig
     spec:
