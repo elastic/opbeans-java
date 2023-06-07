@@ -2,7 +2,7 @@
 
 #Build application stage
 #We need maven.
-FROM maven:3.8.4-jdk-11
+FROM maven:3.8.4-eclipse-temurin-17
 WORKDIR /usr/src/java-app
 
 #build the application
@@ -25,7 +25,7 @@ RUN cp -v /usr/src/java-code/opbeans/target/*.jar /usr/src/java-app/app.jar
 
 #Run application Stage
 #We only need java
-FROM adoptopenjdk:14-jre-hotspot AS base
+FROM eclipse-temurin:17 AS base
 
 RUN export
 RUN apt-get -qq update \
