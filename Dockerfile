@@ -2,7 +2,7 @@
 
 #Build application stage
 #We need maven.
-FROM maven:3.8.4-eclipse-temurin-17
+FROM maven:3.9.2-eclipse-temurin-17
 WORKDIR /usr/src/java-app
 
 #build the application
