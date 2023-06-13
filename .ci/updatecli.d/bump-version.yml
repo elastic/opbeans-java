@@ -56,6 +56,8 @@ targets:
     kind: shell
     spec:
       command: .ci/bump-version.sh
+      environments:
+        - name: PATH
   dockerfile_schema_version:
     name: Set org.label-schema.version in Dockerfile
     sourceid: elastic-apm-agent-java
@@ -74,5 +76,5 @@ targets:
       - mvn
     spec:
       file: Dockerfile
-      matchpattern: 'docker\.elastic\.co\/observability\/apm-agent-java\:(\d+\.\d+\.\d+)'
-      replacepattern: "docker.elastic.co/observability/apm-agent-java:{{ source `elastic-apm-agent-java` }}"
+      matchpattern: docker\.elastic\.co\/observability\/apm-agent-java\:(\d+\.\d+\.\d+)
+      replacepattern: docker.elastic.co/observability/apm-agent-java:{{ source `elastic-apm-agent-java` }}
