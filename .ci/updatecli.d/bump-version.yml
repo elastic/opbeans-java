@@ -40,6 +40,13 @@ sources:
     transformers:
       - trimprefix: "v"
 
+conditions:
+  check-version:
+    sourceid: elastic-apm-agent-java
+    kind: shell
+    spec:
+      command: .ci/check-version.sh
+
 targets:
   version:
     name: Update .version file
