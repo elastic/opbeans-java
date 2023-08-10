@@ -80,7 +80,7 @@ targets:
     scmid: githubConfig
     kind: file
     dependson:
-      - mvn
+      - pom_xml
     spec:
       file: Dockerfile
       matchpattern: docker\.elastic\.co\/observability\/apm-agent-java\:(\d+\.\d+\.\d+)
