@@ -56,15 +56,6 @@ targets:
     spec:
       file: .version
       forcecreate: true
-  mvn:
-    name: Update maven package version
-    sourceid: elastic-apm-agent-java
-    scmid: githubConfig
-    kind: shell
-    spec:
-      command: .ci/bump-version.sh
-      environments:
-        - name: PATH
   pom_xml:
     name: Update maven package version
     sourceid: elastic-apm-agent-java
