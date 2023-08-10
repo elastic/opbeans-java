@@ -65,6 +65,15 @@ targets:
       command: .ci/bump-version.sh
       environments:
         - name: PATH
+  pom_xml:
+    name: Update maven package version
+    scmid: githubConfig
+    kind: xml
+    disablesourceinput: true
+    spec:
+      file: opbeans/pom.xml
+      path: "/project/properties/version.apm-agent-java"
+      value: "{{ source `elastic-apm-agent-java` }}"
   dockerfile_schema_version:
     name: Set org.label-schema.version in Dockerfile
     sourceid: elastic-apm-agent-java
