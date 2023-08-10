@@ -56,15 +56,15 @@ targets:
     spec:
       file: .version
       forcecreate: true
-  mvn:
+  pom_xml:
     name: Update maven package version
     sourceid: elastic-apm-agent-java
     scmid: githubConfig
-    kind: shell
+    kind: xml
     spec:
-      command: .ci/bump-version.sh
-      environments:
-        - name: PATH
+      file: opbeans/pom.xml
+      path: "/project/properties/version.apm-agent-java"
+      value: '{{ source "elastic-apm-agent-java" }}'
   dockerfile_schema_version:
     name: Set org.label-schema.version in Dockerfile
     sourceid: elastic-apm-agent-java
@@ -80,7 +80,7 @@ targets:
     scmid: githubConfig
     kind: file
     dependson:
-      - mvn
+      - pom_xml
     spec:
       file: Dockerfile
       matchpattern: docker\.elastic\.co\/observability\/apm-agent-java\:(\d+\.\d+\.\d+)

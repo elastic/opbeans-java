@@ -28,6 +28,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>17</java.version>
+		<!-- required this property so the updatecli automation uses it -->
+		<version.apm-agent-java>1.41.1</version.apm-agent-java>
 	</properties>
 
 
@@ -67,7 +69,7 @@
 		<dependency>
 			<groupId>co.elastic.apm</groupId>
 			<artifactId>apm-agent-api</artifactId>
-			<version>1.41.1</version>
+			<version>${version.apm-agent-java}</version>
 		</dependency>
 
 		<!-- OpenTelemetry API + SDK -->
