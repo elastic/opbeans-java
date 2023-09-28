@@ -47,7 +47,7 @@ LABEL \
     org.label-schema.schema-version="1.0" \
     org.label-schema.vendor="Elastic" \
     org.label-schema.name="opbeans-java" \
-    org.label-schema.version="1.42.0" \
+    org.label-schema.version="1.43.0" \
     org.label-schema.url="https://hub.docker.com/r/opbeans/opbeans-java" \
     org.label-schema.vcs-url="https://github.com/elastic/opbeans-java" \
     org.label-schema.license="MIT"
