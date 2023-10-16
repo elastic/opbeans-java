@@ -25,7 +25,7 @@ RUN cp -v /usr/src/java-code/opbeans/target/*.jar /usr/src/java-app/app.jar
 
 #Run application Stage
 #We only need java
-FROM eclipse-temurin:17 AS base
+FROM eclipse-temurin:21 AS base
 
 RUN export
 RUN apt-get -qq update \
