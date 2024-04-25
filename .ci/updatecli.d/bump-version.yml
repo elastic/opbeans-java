@@ -22,10 +22,13 @@ actions:
   opbeans-java:
     kind: github/pullrequest
     scmid: githubConfig
+    title: 'deps(apm-agent-java): Update APM Agent Java to {{ source "elastic-apm-agent-java" }}'
     spec:
       automerge: false
       labels:
         - dependencies
+      description: |
+        @elastic/apm-agent-java, can you please approve and merge this PR?
 
 sources:
   elastic-apm-agent-java:
