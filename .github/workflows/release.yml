@@ -59,4 +59,4 @@ jobs:
       with:
         subject-name: ${{ env.DOCKER_IMAGE_NAME }}
         subject-digest: ${{ steps.docker-push.outputs.digest }}
-        push-to-registry: true
+        push-to-registry: false
