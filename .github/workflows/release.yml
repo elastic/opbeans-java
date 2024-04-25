@@ -13,7 +13,10 @@ jobs:
 
   release:
     runs-on: ubuntu-latest
-
+    permissions:
+      attestations: write
+      contents: read
+      id-token: write
     steps:
     - uses: actions/checkout@v4
 
@@ -31,3 +34,13 @@ jobs:
 
     - name: Run publish
       run: make publish
+
+    - id: docker-envs
+      run: make docker-envs
+
+    - name: Attest image
+      uses: github-early-access/generate-build-provenance@main
+      with:
+        subject-name: ${{ steps.docker-envs.outputs.image }}
+        subject-digest: ${{ steps.docker-envs.outputs.digest }}
+        push-to-registry: true
