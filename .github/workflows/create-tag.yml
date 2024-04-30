@@ -1,13 +1,12 @@
 ---
-# Creates a new GitHub release if the version in .version changed in the main branch.
+# Takes the version of elastic-apm-java in the .version file and creates a tag
+# if the tag does not exist yet.
 name: create-tag
 
 on:
   push:
     branches:
       - main
-    paths:
-      - .version
 
 permissions:
   contents: write
@@ -17,12 +16,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Create release
-        run: |
-          APM_AGENT_JAVA_VERSION="v$(cat .version)"
-          gh release create "${APM_AGENT_JAVA_VERSION}" \
-            --title="${APM_AGENT_JAVA_VERSION}" \
-            --generate-notes
-        env:
-          GH_TOKEN: ${{ github.token }}
-      
+        with:
+          fetch-depth: 0 # also fetch tags
+      - uses: elastic/apm-pipeline-library/.github/actions/setup-git@current
+        with:
+          # This should help with running GitHub events
+          token: ${{ secrets.CREATE_TAG_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - run: make create-tag
