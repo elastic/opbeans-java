@@ -1,6 +1,5 @@
 ---
-# Takes the version of elastic-apm-java in the .version file and creates a tag
-# if the tag does not exist yet.
+# Creates a new GitHub release if the version in .version changed in the main branch.
 name: create-tag
 
 on:
