@@ -20,7 +20,7 @@ jobs:
 
       - uses: elastic/oblt-actions/updatecli/run@v1
         with:
-          command: "apply --config .ci/updatecli.d"
+          command: "--experimental apply --config .ci/updatecli.d"
         env:
           GITHUB_TOKEN: ${{ secrets.UPDATECLI_GH_TOKEN }}
 
