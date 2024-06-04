@@ -2,7 +2,7 @@
 
 #Build application stage
 #We need maven.
-FROM maven:3.9.5-eclipse-temurin-21
+FROM maven:3.9.6-eclipse-temurin-22
 WORKDIR /usr/src/java-app
 
 #build the application
@@ -47,7 +47,7 @@ LABEL \
     org.label-schema.schema-version="1.0" \
     org.label-schema.vendor="Elastic" \
     org.label-schema.name="opbeans-java" \
-    org.label-schema.version="1.50.0" \
+    org.label-schema.version="1.49.0" \
     org.label-schema.url="https://hub.docker.com/r/opbeans/opbeans-java" \
     org.label-schema.vcs-url="https://github.com/elastic/opbeans-java" \
     org.label-schema.license="MIT"
