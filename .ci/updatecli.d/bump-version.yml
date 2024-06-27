@@ -13,7 +13,7 @@ scms:
       repository: opbeans-java
       token: '{{ requiredEnv "GITHUB_TOKEN" }}'
       username: '{{ requiredEnv "GITHUB_ACTOR" }}'
-      branch: main
+      branch: feature/remove-deprecated-title-updatecli
       commitusingapi: true
 
 actions:
