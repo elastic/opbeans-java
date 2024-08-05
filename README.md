@@ -13,7 +13,7 @@ To run the application run the following command from the `opbeans` folder:
 ## Run locally
 To run locally, including Server, Kibana and Elasticsearch, use the provided docker compose file by running the command
 ```bash
-docker-compose up
+docker compose up
 ```
 
 ## Run with Elastic Cloud
@@ -23,7 +23,7 @@ docker-compose up
 2. Add environmental variable `STACK_VERSION` to match your deployed Elasticsearch version.
 3. Run
 ```bash
-docker-compose -f docker-compose-elastic-cloud.yml up
+docker compose -f docker-compose-elastic-cloud.yml up
 ```
 
 ## Testing locally
