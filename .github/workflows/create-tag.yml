@@ -1,0 +1,25 @@
+---
+# Creates a new GitHub release if the version in .version changed in the main branch.
+name: create-tag
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .version
+
+permissions:
+  contents: read
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # also fetch tags
+
+      - run: make create-release
+        env:
+          GH_TOKEN: ${{ secrets.CREATE_TAG_TOKEN }}

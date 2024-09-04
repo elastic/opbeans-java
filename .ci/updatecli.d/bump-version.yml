@@ -1,0 +1,88 @@
+---
+# yaml-language-server: $schema=https://www.updatecli.io/schema/latest/config.json
+## Workflow to periodically check if there is an available newer APM agent version, e.g.
+## "1.2.3". If so, then update to it.
+name: Bump apm-agent-java to latest version
+
+scms:
+  githubConfig:
+    kind: github
+    spec:
+      user: '{{ requiredEnv "GITHUB_ACTOR" }}'
+      owner: elastic
+      repository: opbeans-java
+      token: '{{ requiredEnv "GITHUB_TOKEN" }}'
+      username: '{{ requiredEnv "GITHUB_ACTOR" }}'
+      branch: main
+      commitusingapi: true
+
+actions:
+  opbeans-java:
+    kind: github/pullrequest
+    scmid: githubConfig
+    title: 'deps(apm-agent-java): Update APM Agent Java to {{ source "elastic-apm-agent-java" }}'
+    spec:
+      automerge: false
+      labels:
+        - dependencies
+      description: |
+        @elastic/apm-agent-java, can you please approve and merge this PR?
+
+sources:
+  elastic-apm-agent-java:
+    kind: githubrelease
+    spec:
+      owner: elastic
+      repository: apm-agent-java
+      token: '{{ requiredEnv "GITHUB_TOKEN" }}'
+      username: '{{ requiredEnv "GITHUB_ACTOR" }}'
+      versionfilter:
+        kind: semver
+    transformers:
+      - trimprefix: "v"
+
+conditions:
+  check-version:
+    sourceid: elastic-apm-agent-java
+    kind: shell
+    spec:
+      command: .ci/check-version.sh
+
+targets:
+  version:
+    name: Update .version file
+    sourceid: elastic-apm-agent-java
+    scmid: githubConfig
+    kind: file
+    spec:
+      file: .version
+      forcecreate: true
+  pom_xml:
+    name: Update maven package version
+    sourceid: elastic-apm-agent-java
+    scmid: githubConfig
+    kind: xml
+    spec:
+      file: opbeans/pom.xml
+      path: "/project/properties/version.apm-agent-java"
+      value: '{{ source "elastic-apm-agent-java" }}'
+  dockerfile_schema_version:
+    name: Set org.label-schema.version in Dockerfile
+    sourceid: elastic-apm-agent-java
+    scmid: githubConfig
+    kind: file
+    spec:
+      file: Dockerfile
+      matchpattern: 'org\.label-schema\.version="(\d+.\d+.\d+)"'
+      replacepattern: org.label-schema.version="{{ source `elastic-apm-agent-java` }}"
+  dockerfile_agent_version:
+    name: Set apm-agent version in Dockerfile
+    sourceid: elastic-apm-agent-java
+    scmid: githubConfig
+    kind: file
+    dependson:
+      - pom_xml
+    spec:
+      file: Dockerfile
+      matchpattern: docker\.elastic\.co\/observability\/apm-agent-java\:(\d+\.\d+\.\d+)
+      replacepattern: docker.elastic.co/observability/apm-agent-java:{{ source `elastic-apm-agent-java` }}

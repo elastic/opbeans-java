@@ -1,4 +1,4 @@
-[![Build Status](https://apm-ci.elastic.co/buildStatus/icon?job=apm-agent-java%2Fopbeans-java-mbp%2Fmaster)](https://apm-ci.elastic.co/job/apm-agent-java/job/opbeans-java-mbp/job/master/)
+[![Build Status](https://github.com/elastic/opbeans-java/actions/workflows/test.yml/badge.svg)](https://github.com/elastic/opbeans-java/actions/workflows/test.yml)
 
 # opbeans-java
 This is an implementation of the [Opbeans Demo app](http://opbeans.com) in Java as an [Spring Boot](https://projects.spring.io/spring-boot/) application . It uses the same
@@ -12,17 +12,18 @@ To run the application run the following command from the `opbeans` folder:
 
 ## Run locally
 To run locally, including Server, Kibana and Elasticsearch, use the provided docker compose file by running the command
-```bash   
-docker-compose up
+```bash
+docker compose up
 ```
 
 ## Run with Elastic Cloud
 
 0. Start Elastic Cloud [trial](https://www.elastic.co/cloud/elasticsearch-service/signup) (if you don't have it yet)
 1. Add environmental variables `ELASTIC_CLOUD_ID` and `ELASTIC_CLOUD_CREDENTIALS` (in format `login:password`)
-2. Run
+2. Add environmental variable `STACK_VERSION` to match your deployed Elasticsearch version.
+3. Run
 ```bash
-docker-compose -f docker-compose-elastic-cloud.yml up
+docker compose -f docker-compose-elastic-cloud.yml up
 ```
 
 ## Testing locally
@@ -59,3 +60,14 @@ Another possible way is to create a different property file like application-cus
 
 The application has a built-in bug that you can trigger by
 navigating to the path `/is-it-coffee-time`.
+
+## Agent mode (elasticapm/opentelemetry)
+
+The Opbeans Java can use the APM Agent Java or the OpenTelemetry java implementation
+in order to choose one of other you have to set the environment variable APM_AGENT_TYPE
+to `elasticapm` when you use the APM Agent Java and `opentelemetry` to use OpenTelemetry java implementation.
+Finally, there is also the `none` value that will make Opbeans run without any instrumentation agent.
+
+When OpenTelemetry agent is enabled, the OpenTelemetry environment variables should be properly set to allow the application to send spans created through manual instrumentation.
+see the [docker-compose](./docker-compose.yml) file for more details about the environment variables, and [OpenTelemetry SDK Autoconfigure](https://github.com/open-telemetry/opentelemetry-java/blob/main/sdk-extensions/autoconfigure/README.md) for more details.
+
