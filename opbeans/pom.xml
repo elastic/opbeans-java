@@ -25,6 +25,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<elasticsearch.version>8.15.0</elasticsearch.version>
 		<java.version>17</java.version>
 		<!-- required this property so the updatecli automation uses it -->
 		<version.apm-agent-java>1.51.0</version.apm-agent-java>
