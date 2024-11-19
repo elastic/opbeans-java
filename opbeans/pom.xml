@@ -28,7 +28,7 @@
 		<elasticsearch.version>8.15.0</elasticsearch.version>
 		<java.version>17</java.version>
 		<!-- required this property so the updatecli automation uses it -->
-		<version.apm-agent-java>1.52.0</version.apm-agent-java>
+		<version.apm-agent-java>1.52.1</version.apm-agent-java>
 	</properties>
 
 
