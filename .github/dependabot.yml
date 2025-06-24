@@ -10,8 +10,6 @@ updates:
       interval: "weekly"
       day: "sunday"
       time: "22:00"
-    reviewers:
-      - "elastic/apm-agent-java"
 
   # Enable version updates for Docker
   - package-ecosystem: "docker"
@@ -21,8 +19,6 @@ updates:
       interval: "weekly"
       day: "sunday"
       time: "22:00"
-    reviewers:
-      - "elastic/apm-agent-java"
 
   # GitHub actions
   - package-ecosystem: "github-actions"
