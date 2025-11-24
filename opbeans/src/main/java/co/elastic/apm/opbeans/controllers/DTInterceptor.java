@@ -1,6 +1,7 @@
 package co.elastic.apm.opbeans.controllers;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -10,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.ResponseErrorHandler;
@@ -100,7 +102,7 @@ public class DTInterceptor implements HandlerInterceptor {
         }
 
         @Override
-        public void handleError(ClientHttpResponse httpResponse) throws IOException {
+        public void handleError(HttpMethod method, URI url, ClientHttpResponse httpResponse) throws IOException {
             throw new RestCallException(httpResponse.getStatusCode().value(), httpResponse.getStatusText());
         }
     }
