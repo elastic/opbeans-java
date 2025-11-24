@@ -101,7 +101,6 @@ public class DTInterceptor implements HandlerInterceptor {
                     || httpResponse.getStatusCode().is5xxServerError());
         }
 
-        @Override
         public void handleError(HttpMethod method, URI url, ClientHttpResponse httpResponse) throws IOException {
             throw new RestCallException(httpResponse.getStatusCode().value(), httpResponse.getStatusText());
         }
