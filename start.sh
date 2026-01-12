@@ -24,6 +24,9 @@ case "${APM_AGENT_TYPE:-none}" in
     "elasticapm")
         JAVA_AGENT="-javaagent:/app/elastic-apm-agent.jar"
         ;;
+    "edot")
+        JAVA_AGENT="-javaagent:/app/elastic-otel-java.jar"
+        ;;
     "none")
         JAVA_AGENT=""
         ;;
