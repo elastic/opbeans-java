@@ -19,7 +19,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.4.4</version>
+		<version>4.0.0</version>
 	</parent>
 
 	<properties>
@@ -28,7 +28,7 @@
 		<elasticsearch.version>8.15.0</elasticsearch.version>
 		<java.version>17</java.version>
 		<!-- required this property so the updatecli automation uses it -->
-		<version.apm-agent-java>1.52.2</version.apm-agent-java>
+		<version.apm-agent-java>1.55.2</version.apm-agent-java>
 	</properties>
 
 
@@ -37,14 +37,14 @@
 			<dependency>
 				<groupId>io.opentelemetry</groupId>
 				<artifactId>opentelemetry-bom</artifactId>
-				<version>1.48.0</version>
+				<version>1.58.0</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
 			<dependency>
 				<groupId>io.opentelemetry</groupId>
 				<artifactId>opentelemetry-bom-alpha</artifactId>
-				<version>1.48.0-alpha</version>
+				<version>1.58.0-alpha</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -52,7 +52,7 @@
 			<dependency>
 				<groupId>org.jetbrains.kotlin</groupId>
 				<artifactId>kotlin-stdlib</artifactId>
-				<version>2.1.20</version>
+				<version>2.3.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jetbrains.kotlin</groupId>
@@ -96,7 +96,7 @@
 		<dependency>
 			<groupId>co.elastic.logging</groupId>
 			<artifactId>logback-ecs-encoder</artifactId>
-			<version>1.6.0</version>
+			<version>1.7.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -107,8 +107,8 @@
 			<artifactId>spring-boot-starter-jersey</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-webmvc</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.postgresql</groupId>
@@ -126,6 +126,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-webmvc-test</artifactId>
+		<scope>test</scope>
 		</dependency>
 		<dependency>
 		    <groupId>org.javassist</groupId>

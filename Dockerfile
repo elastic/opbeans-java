@@ -2,7 +2,7 @@
 
 #Build application stage
 #We need maven.
-FROM maven:3.9.8-eclipse-temurin-22
+FROM maven:3.9.11-eclipse-temurin-25
 WORKDIR /usr/src/java-app
 
 #build the application
@@ -25,7 +25,7 @@ RUN cp -v /usr/src/java-code/opbeans/target/*.jar /usr/src/java-app/app.jar
 
 #Run application Stage
 #We only need java
-FROM eclipse-temurin:17 AS base
+FROM eclipse-temurin:25 AS base
 
 RUN export
 RUN apt-get -qq update \
@@ -37,7 +37,7 @@ COPY --from=0 /usr/src/java-app/*.jar ./
 
 # Copy Elastic agent from docker image
 # updated by .ci/bump-version.sh
-COPY --from=docker.elastic.co/observability/apm-agent-java:1.52.1 /usr/agent/elastic-apm-agent.jar /app/elastic-apm-agent.jar
+COPY --from=docker.elastic.co/observability/apm-agent-java:1.55.2 /usr/agent/elastic-apm-agent.jar /app/elastic-apm-agent.jar
 
 #Download the opentelemetry agent
 RUN curl -L https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v1.10.1/opentelemetry-javaagent.jar --output /app/opentelemetry-javaagent.jar
@@ -47,7 +47,7 @@ LABEL \
     org.label-schema.schema-version="1.0" \
     org.label-schema.vendor="Elastic" \
     org.label-schema.name="opbeans-java" \
-    org.label-schema.version="1.52.2" \
+    org.label-schema.version="1.55.2" \
     org.label-schema.url="https://hub.docker.com/r/opbeans/opbeans-java" \
     org.label-schema.vcs-url="https://github.com/elastic/opbeans-java" \
     org.label-schema.license="MIT"
