@@ -1,3 +1,6 @@
+# pull_request_target is kept on purpose: it is the only trigger that gives PRs from forks a
+# token that can write labels. No PR code is checked out or run; the job only calls the
+# GitHub API with event metadata (actor, PR number).
 name: "Issue Labeler"
 on:
   issues:
@@ -5,13 +8,14 @@ on:
   pull_request_target:
     types: [opened, synchronize, reopened]
 
-permissions:
-  contents: read
-  issues: write
-  pull-requests: write
+permissions: {}
 
 jobs:
   triage:
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
 
@@ -27,10 +31,11 @@ jobs:
         permission-pull-requests: write
 
     - name: Add agent-java label
-      run: gh issue edit "${NUMBER}" --add-label "agent-java" --repo "${{ github.repository }}"
+      run: gh issue edit "${NUMBER}" --add-label "agent-java" --repo "${GH_REPO}"
       env:
         NUMBER: ${{ github.event.issue.number || github.event.pull_request.number }}
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_REPO: ${{ github.repository }}
 
     - id: is_elastic_member
       uses: elastic/oblt-actions/github/is-member-of@v1
@@ -47,25 +52,33 @@ jobs:
 
     - name: debug
       run: |
-        echo "::notice:: is_elastic_member=${{ steps.is_elastic_member.outputs.result }}"
-        echo "::notice:: user_type=${{ steps.user_type.outputs.result }}"
-        echo "::notice:: github.actor=${{ github.actor }}"
-        echo "::notice:: github.event_name=${{ github.event_name }}"
+        echo "::notice:: is_elastic_member=${IS_MEMBER}"
+        echo "::notice:: user_type=${USER_TYPE}"
+        echo "::notice:: github.actor=${ACTOR}"
+        echo "::notice:: github.event_name=${EVENT_NAME}"
+      env:
+        IS_MEMBER: ${{ steps.is_elastic_member.outputs.result }}
+        USER_TYPE: ${{ steps.user_type.outputs.result }}
+        ACTOR: ${{ github.actor }}
+        EVENT_NAME: ${{ github.event_name }}
 
     - name: Add community and triage labels
       if: steps.is_elastic_member.outputs.result == 'false' && steps.user_type.outputs.result == 'user'
-      run: gh issue edit "${NUMBER}" --add-label "community,triage" --repo "${{ github.repository }}"
+      run: gh issue edit "${NUMBER}" --add-label "community,triage" --repo "${GH_REPO}"
       env:
         NUMBER: ${{ github.event.issue.number || github.event.pull_request.number }}
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_REPO: ${{ github.repository }}
 
     - name: Assign new internal pull requests to author
       id: assign-to-author
       if: steps.is_elastic_member.outputs.result == 'true' && github.event_name == 'pull_request_target'
-      run: gh issue edit "${NUMBER}" --add-assignee "${{ github.actor }}" --repo "${{ github.repository }}"
+      run: gh issue edit "${NUMBER}" --add-assignee "${ACTOR}" --repo "${GH_REPO}"
       env:
+        ACTOR: ${{ github.actor }}
         NUMBER: ${{ github.event.issue.number || github.event.pull_request.number }}
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_REPO: ${{ github.repository }}
 
     - name: Assign new internal pull requests to project
       id: add-to-project
